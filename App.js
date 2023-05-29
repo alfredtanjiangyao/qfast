@@ -22,6 +22,7 @@ import Dashboard from './src/screens/dashboard';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { KeyboardAvoidingView ,SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image} from 'react-native';
+import 'firebase/auth';
 
 const Stack = createStackNavigator();
 function MyStack() {
