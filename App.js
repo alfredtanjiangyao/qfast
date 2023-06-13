@@ -1,16 +1,3 @@
-// import { StatusBar } from 'expo-status-bar';
-// import React, { useState } from 'react';
-// import { KeyboardAvoidingView ,SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image} from 'react-native';
-// import  login from './src/screens/login';
-
-
-// export default function App() {
-//   return (
-//     <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
-//       <SignIn />
-//     </KeyboardAvoidingView>
-//   );
-// }
 
 // App.js
 import * as React from 'react';
@@ -21,14 +8,15 @@ import Signup from './src/screens/signup';
 import Dashboard from './src/screens/dashboard';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { KeyboardAvoidingView ,SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image} from 'react-native';
+import { KeyboardAvoidingView, SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image } from 'react-native';
 import 'firebase/auth';
+import Booking from './booking';
 
 const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Signup"
+      initialRouteName="Booking"
       screenOptions={{
         headerTitleAlign: 'center',
         headerStyle: {
@@ -39,27 +27,30 @@ function MyStack() {
           fontWeight: 'bold',
         },
       }}>
-      <Stack.Screen 
-        name="Signup" 
-        component={Signup} 
+      <Stack.Screen
+        name="Signup"
+        component={Signup}
         options={{ title: 'Signup' }}
-      />       
-      <Stack.Screen 
-        name="Login" 
-        component={Login} 
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
         options={[
           { title: 'Login' },
           { headerLeft: null }
         ]}
       />
-      <Stack.Screen 
-       name="Dashboard" 
-       component={Dashboard} 
-       options={[
-         { title: 'Dashboard' },
-         {headerLeft: null} 
-       ]}
+      <Stack.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={[
+          { title: 'Dashboard' },
+          { headerLeft: null }
+        ]}
       />
+      <Stack.Screen
+        name="Booking"
+        component={Booking} />
     </Stack.Navigator>
   );
 }

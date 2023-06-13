@@ -1,6 +1,6 @@
 // components/login.js
 import React, { Component,useState } from 'react';
-import firebase from '../firebase/config';
+import {firebase, firestore} from '../firebase/config';
 import 'firebase/auth';
 import { FirebaseAuthProvider, IfFirebaseAuthed } from '@react-firebase/auth';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
