@@ -11,6 +11,14 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image } from 'react-native';
 import 'firebase/auth';
 import Booking from './booking';
+import Register from './staff page/register';
+
+// export default function App() {
+//   return (
+//       <Register />
+//   );
+// }
+
 
 const Stack = createStackNavigator();
 function MyStack() {
