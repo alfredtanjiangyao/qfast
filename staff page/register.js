@@ -1,11 +1,13 @@
 import { db } from '../src/firebase/config';
-import { collection, addDoc, getDoc, doc, setDoc} from 'firebase/firestore';
+import { collection, addDoc, getDoc, doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { View, Text, TextInput, Button, TimePickerAndroid, StyleSheet, Animated } from 'react-native';
+import { View, Text, TimePickerAndroid, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { TextInput, Button, Dialog } from 'react-native-paper';
+
 
 // register new hospital 
-const page1 = () => {
+const register = () => {
     const [clinicName, setClinicName] = useState('');
     const [maxSlot, setmaxSlot] = useState('');
     const [show, setShow] = useState(false);
@@ -13,7 +15,7 @@ const page1 = () => {
     const [endTime, setEndTime] = useState(new Date().setHours(22, 0, 0, 0));
     const [showStartTimePicker, setShowStartTimePicker] = useState(true);
     const [showEndTimePicker, setShowEndTimePicker] = useState(true);
-    const [isFinish, setIsFinish] = useState(false);
+    // const [isFinish, setIsFinish] = useState(false);
 
     const nextSubmit = async () => {
         try {
@@ -48,7 +50,7 @@ const page1 = () => {
                 const docRef = doc(colRef, clinicName);
                 await setDoc(docRef, data);
                 alert('Data saved successfully!');
-                
+
             }
             catch (error) {
                 console.error('Error adding clinic:', error);
@@ -69,43 +71,100 @@ const page1 = () => {
         }
     };
     return (
-        <View style={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            {!show && (<View>
-                <TextInput
+        <View style={{ flex: 1 }}>
 
-                    placeholder="Enter hospital name"
+            {!show && (<KeyboardAvoidingView style={styles.container} behavior="padding">
+                <TextInput
+                    style={styles.textInput}
+                    label="Hospital name"
                     value={clinicName}
                     onChangeText={setClinicName}
                 />
-                <Button title="Next" onPress={nextSubmit} />
-            </View>)}
-            {show && (<View>
-                <TextInput
-                    placeholder="Enter max slot"
-                    value={maxSlot}
-                    onChangeText={setmaxSlot}
-                />
-                <Text> Start Time: </Text>
-                {showStartTimePicker && (
-                    <DateTimePicker
-                        value={new Date(startTime)}
-                        mode="time"
-                        display="default"
-                        onChange={handleStartTimeChange}
+                {clinicName && (<View style={styles.next}>
+                    <Button mode="elevated" onPress={nextSubmit} >
+                        Next
+                    </Button>
+                </View>)}
+            </KeyboardAvoidingView>)}
+            <View style={styles.container}>
+                {show && (<View style={styles.content}>
+                    <Dialog.Title style={{ fontFamily: "Georgia-BoldItalic" }}>{clinicName}</Dialog.Title>
+                    <TextInput
+                        style={styles.textInput}
+                        label="Max slot"
+                        value={maxSlot}
+                        onChangeText={setmaxSlot}
                     />
-                )}
-                <Text> End Time: </Text>
-                {showEndTimePicker && (
-                    <DateTimePicker
-                        value={new Date(endTime)}
-                        mode="time"
-                        display="default"
-                        onChange={handleEndTimeChange}
-                    />
-                )}
-                <Button title="finish" onPress={handleSubmit} />
-            </View>)}
+
+                    <Text style={styles.timetitle}> Start Time: </Text>
+                    {showStartTimePicker && (
+                        <DateTimePicker
+                            value={new Date(startTime)}
+                            mode="time"
+                            display="default"
+                            onChange={handleStartTimeChange}
+                        />
+                    )}
+                    <Text style={styles.timetitle}> End Time: </Text>
+                    {showEndTimePicker && (
+                        <DateTimePicker
+                            value={new Date(endTime)}
+                            mode="time"
+                            display="default"
+                            onChange={handleEndTimeChange}
+                        />
+                    )}
+
+                    <Button style={styles.finish} mode="elevated" onPress={handleSubmit} >
+                        Finish
+                    </Button>
+                </View>)}
+            </View>
+
         </View>
     )
 }
-export default page1;
+const styles = StyleSheet.create({
+    container: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        backgroundColor: 'seashell',
+        paddingBottom: 20,
+
+    },
+    content: {
+        //justifyContent: 'center',
+        alignItems: 'flex-start',
+        flexGrow: 1,
+        //flex: 1,
+       // backgroundColor: 'white',
+        marginHorizontal: 30,
+        marginVertical: 30
+    },
+    textInput: {
+        backgroundColor: 'white',
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: 5,
+        width: 300,
+        height: 50,
+        paddingLeft: 5,
+        //textAlign: 'left'
+    },
+    next: {
+        marginTop: 40,
+
+    },
+    finish: {
+        bottom: 20,
+        position: 'absolute',
+        alignItems: 'flex-end'
+    },
+    timetitle: {
+        fontWeight: 200,
+        marginTop: 40,
+        marginBottom: 20
+    }
+})
+export default register;

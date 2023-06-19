@@ -17,9 +17,7 @@ const Home = () => {
   const [hospital, setHospital] = useState('');
   const [bookDate, setBookDate] = useState(null);
   const [bookTime, setBookTime] = useState('');
-  //const [bookingData, setBookingData] = useState([]);
   const [bookingRef, setBookingRef] = useState(null); // refer to the clinic docs booking col
-  //const bookingRef = collection(db, 'bookings');
   const [availableSlots, setAvailableSlots] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const navigation = useNavigation();
@@ -45,15 +43,6 @@ const Home = () => {
     if (bookDate) {
       // Fetch available slots based on the selected date
       const fetchAvailableSlots = (date) => {
-        // //start time
-        // const starthours = startTime.getHours();
-        // const startMins = startTime.getMinutes();
-        // startTime.setHours(starthours, startMins, 0, 0); 
-
-        // //end minute
-        // const endhours = endTime.getHours();
-        // const endMins = endTime.getMinutes();
-        // endTime.setHours(endhours, endMins, 0, 0); // Set the end time to 12 am (midnight) the next day
 
         const slots = [];
 
@@ -65,7 +54,6 @@ const Home = () => {
         currentTime.setFullYear(bookDate.getFullYear(), bookDate.getMonth(), bookDate.getDate());
         endTime.setFullYear(bookDate.getFullYear(), bookDate.getMonth(), bookDate.getDate());
         while (currentTime <= endTime) {
-          console.log(currentTime, now, currentTime >= now);
           if (currentTime >= now) {
 
             const formattedTime = currentTime.toLocaleTimeString('en-US', {
@@ -86,16 +74,16 @@ const Home = () => {
       setAvailableSlots(fetchedSlots);
     }
     setBookTime('');
-  }, [bookDate]);
+  }, [bookDate, hospital, endTime]);
   async function isSlotAvailable(dt, tm) {
     console.log('Date:', dt);
     console.log('Time:', tm);
-    const formattedDate = dt.substring(0, 10);
-    const q = query(bookingRef, where("date", "==", formattedDate), where("time", "==", tm));
+    //const formattedDate = dt.substring(0, 10);
+    const q = query(bookingRef, where("date", "==", dt), where("time", "==", tm));
     const snapshot = await getDocs(q);
-
+    console.log(maxSlot);
     // Check if the number of bookings for the slot is less than 5
-    const isAvailable = snapshot.size <= maxSlot;
+    const isAvailable = snapshot.size < maxSlot;
     console.log(snapshot.size);
     return isAvailable;
 
@@ -128,7 +116,6 @@ const Home = () => {
           const endTimeValue = docSnap.data().endTime;
           setEndTime(endTimeValue.toDate());
           setBookingRef(collection(docRef, 'bookings'));
-          console.log(hospital, startTime);
         } catch (error) {
           console.error('Error retrieving document:', error);
         }
@@ -157,6 +144,7 @@ const Home = () => {
     navigation.navigate('Dashboard');
     setBookDate('');
     setBookTime('');
+    setHospital('');
   };
 
   return (
@@ -195,7 +183,7 @@ const Home = () => {
 
             <ScrollView style={styles.scrollcontainer}>
               <View style={styles.timeSlotTable}>
-                {bookDate && (availableSlots.map((eachTime, index) => (
+                {bookDate && hospital && (availableSlots.map((eachTime, index) => (
                   <View key={eachTime}>
                     {timeSlots[index] ? (
                       <TouchableOpacity
