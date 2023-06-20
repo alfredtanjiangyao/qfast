@@ -25,7 +25,7 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Booking"
+      initialRouteName="Dashboard"
       screenOptions={{
         headerTitleAlign: 'center',
         headerStyle: {
