@@ -1,10 +1,8 @@
-// components/login.js
 import React, { Component,useState } from 'react';
-import {firebase, firestore} from '../firebase/config';
 import 'firebase/auth';
 import { FirebaseAuthProvider, IfFirebaseAuthed } from '@react-firebase/auth';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-const auth = getAuth();
+import { auth, googleProvider, db } from '../firebase/config';
 
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView ,SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image, Button, Alert, ActivityIndicator} from 'react-native';
@@ -16,38 +14,48 @@ export default class Login extends Component {
     this.state = { 
       email: '', 
       password: '',
-      isLoading: false
+      loading: false
     }
   }
+
   updateInputVal = (val, prop) => {
     const state = this.state;
     state[prop] = val;
     this.setState(state);
   }
 
-  userLogin = () => {
-    if(this.state.email === '' && this.state.password === '') {
-      Alert.alert('Enter details to signin!')
+  userLoginWithEmail = async () => {
+    try {
+    const {email, password} = this.state;
+
+    if (!email || !password) {
+        Alert.alert('Enter details to signin!')
+        return;
     } else {
+      this.setState({ loading: true,})
+
+      const res = await signInWithEmailAndPassword(auth, email, password);
+
+      console.log(res)
+      console.log('User logged-in successfully!')
+
       this.setState({
-        isLoading: true,
+        loading: false,
+        email: '', 
+        password: ''
       })
-      signInWithEmailAndPassword(auth,this.state.email, this.state.password)
-      .then((res) => {
-        console.log(res)
-        console.log('User logged-in successfully!')
-        this.setState({
-          isLoading: false,
-          email: '', 
-          password: ''
-        })
+
         this.props.navigation.navigate('Dashboard')
-      })
-      .catch(error => this.setState({ errorMessage: error.message }))
+      } 
+    }catch (error) {
+        console.error('Sign in error', error);
+        this.setState({ loading: false, });
+        return;
     }
   }
+
   render() {
-    if(this.state.isLoading){
+    if(this.state.loading){
       return(
         <View style={styles.preloader}>
           <ActivityIndicator size="large" color="#9E9E9E"/>
@@ -82,7 +90,9 @@ export default class Login extends Component {
 
         <TouchableOpacity style={styles.loginBtn}>
           <Text style={styles.loginText}
-          onPress={() => this.props.navigation.navigate('Dashboard')}
+          onPress={() => {
+            this.userLoginWithEmail();
+          }}
           >
           LOGIN
           </Text> 
@@ -148,3 +158,4 @@ const styles = StyleSheet.create({
   }
   
   });
+

@@ -1,7 +1,14 @@
 import * as firebase from 'firebase/app';
+// import * as firebase from 'firebase/app'; 已经include全部东西了？
 import 'firebase/auth';
-import 'firebase/firestore';
+import '@firebase/firestore';
+
+import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getStorage } from "firebase/storage";
+
+// import 'firebase/firestore' -> doesn't provide access to the 'getFirestore' function -> so we need to import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDDTzek1MiTGGBz0aFSUF4dtzwuzYd4Lqs",
@@ -13,5 +20,11 @@ const firebaseConfig = {
     measurementId: "G-HTVGB6SQ5C"
 };
 
+// Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
+
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+
