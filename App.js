@@ -11,6 +11,15 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, SafeAreaView, TouchableOpacity, TextInput, StyleSheet, Text, View, Image } from 'react-native';
 import 'firebase/auth';
 import Booking from './booking';
+import Home from './staff page/home';
+import Register from './staff page/register'
+
+// export default function App() {
+//   return (
+//       <Home />
+//   );
+// }
+
 
 const Stack = createStackNavigator();
 function MyStack() {
@@ -51,6 +60,12 @@ function MyStack() {
       <Stack.Screen
         name="Booking"
         component={Booking} />
+        <Stack.Screen
+        name="Register"
+        component={Register} />
+        <Stack.Screen
+        name="Home"
+        component={Home} />
     </Stack.Navigator>
   );
 }

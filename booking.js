@@ -1,51 +1,61 @@
-// sy firebase
-import { View, Text, Button, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+
+import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { db } from './src/firebase/config';
-import { collection, onSnapshot, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, query, where, getDocs, listCollections, doc, getDoc } from 'firebase/firestore';
 import CalendarPicker from 'react-native-calendar-picker';
 import moment from 'moment';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 import Dashboard from './src/screens/dashboard';
 
 
 
 const Home = () => {
+  const [collections, setCollections] = useState([]);
+  const [hospital, setHospital] = useState('');
   const [bookDate, setBookDate] = useState(null);
   const [bookTime, setBookTime] = useState('');
-  const [bookingData, setBookingData] = useState([]);
-  const bookingRef = collection(db, 'bookings');
+  const [bookingRef, setBookingRef] = useState(null); // refer to the clinic docs booking col
   const [availableSlots, setAvailableSlots] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const navigation = useNavigation();
-
-
+  const [maxSlot, setMaxSlot] = useState(0);
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
+  const colRef = collection(db, 'clinics');
   useEffect(() => {
-    const unsubscribe = onSnapshot(bookingRef, (docSnapshot) => {
-      const updatedBookingData = docSnapshot.data;
-      setBookingData(updatedBookingData);
-    });
-    return () => unsubscribe();
+    // Fetch the list of Clinics docs
+    const fetchCollections = async () => {
+      try {
+        const querySnapshot = await getDocs(colRef);
+        const documents = querySnapshot.docs.map((doc) => doc.id);
+        setCollections(documents);
+      } catch (error) {
+        console.log('Error fetching collections:', error);
+      }
+    };
+    fetchCollections();
   }, []);
+
   useEffect(() => {
-    const currentDate = new Date();
-    const now = currentDate.getTime();
     if (bookDate) {
       // Fetch available slots based on the selected date
       const fetchAvailableSlots = (date) => {
-        const startTime = new Date(date);
-        startTime.setHours(10, 0, 0, 0); // Set the start time to 10 am
-
-        const endTime = new Date(date);
-        endTime.setHours(23, 30, 0, 0); // Set the end time to 12 am (midnight) the next day
 
         const slots = [];
 
         // Iterate over the time range with a 30-minute interval
-        let currentTime = startTime;
+        const currentDate = new Date();
+        const now = currentDate;
+        let currentTime = new Date();
+        currentTime.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+        currentTime.setFullYear(bookDate.getFullYear(), bookDate.getMonth(), bookDate.getDate());
+        endTime.setFullYear(bookDate.getFullYear(), bookDate.getMonth(), bookDate.getDate());
         while (currentTime <= endTime) {
-          if (currentTime.getTime() >= now) {
+          if (currentTime >= now) {
+
             const formattedTime = currentTime.toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -54,9 +64,9 @@ const Home = () => {
           }
 
           // Increment the time by 30 minutes
-          currentTime = new Date(currentTime.getTime() + 30 * 60 * 1000);
+          currentTime.setMinutes(currentTime.getMinutes() + 30);
         }
-
+        console.log(slots);
         return slots;
       };
 
@@ -64,16 +74,16 @@ const Home = () => {
       setAvailableSlots(fetchedSlots);
     }
     setBookTime('');
-  }, [bookDate]);
+  }, [bookDate, hospital, endTime]);
   async function isSlotAvailable(dt, tm) {
     console.log('Date:', dt);
     console.log('Time:', tm);
-    const formattedDate = dt.substring(0, 10);
-    const q = query(bookingRef, where("date", "==", formattedDate), where("time", "==", tm));
+    //const formattedDate = dt.substring(0, 10);
+    const q = query(bookingRef, where("date", "==", dt), where("time", "==", tm));
     const snapshot = await getDocs(q);
-
+    console.log(maxSlot);
     // Check if the number of bookings for the slot is less than 5
-    const isAvailable = snapshot.size < 5;
+    const isAvailable = snapshot.size < maxSlot;
     console.log(snapshot.size);
     return isAvailable;
 
@@ -91,7 +101,33 @@ const Home = () => {
     fetchData();
   }, [bookDate, availableSlots]);
 
+  // update info when picker changes
+  useEffect(() => {
+    const fetchData = async () => {
 
+      if (hospital) {
+        try {
+          const docRef = doc(colRef, hospital);
+          const docSnap = await getDoc(docRef);
+          const maxSlotValue = docSnap.data().maxSlot;
+          setMaxSlot(maxSlotValue);
+          const startTimeValue = docSnap.data().startTime;
+          setStartTime(startTimeValue.toDate());
+          const endTimeValue = docSnap.data().endTime;
+          setEndTime(endTimeValue.toDate());
+          setBookingRef(collection(docRef, 'bookings'));
+        } catch (error) {
+          console.error('Error retrieving document:', error);
+        }
+      }
+    };
+    fetchData();
+  }, [hospital]);
+
+
+  const handlePickerChange = (itemValue) => {
+    setHospital(itemValue);
+  };
   const handleSubmit = () => {
     const newBookingData = {
       date: bookDate,
@@ -108,16 +144,29 @@ const Home = () => {
     navigation.navigate('Dashboard');
     setBookDate('');
     setBookTime('');
+    setHospital('');
   };
 
   return (
     <View style={{ flexGrow: 1, backgroundColor: 'white' }}>
       <View style={styles.container}>
+        <View>
+          <Picker
+            selectedValue={hospital}
+            onValueChange={handlePickerChange}
+          >
+            <Picker.Item label="Select a hospital" value="" />
+            {collections.map((clinics, index) => (
+              <Picker.Item key={index} label={clinics} value={clinics} />
+            ))}
+          </Picker>
+        </View>
         <Text style={styles.text}>Select a date:</Text>
-        <View >
+
+        {hospital && (<View >
           <CalendarPicker
             onDateChange={(date) => {
-              const formattedDate = moment(date).format('YYYY-MM-DD'); // Format the date as needed
+              const formattedDate = moment(date).toDate(); // Format the date as needed
               setBookDate(formattedDate);
             }}
             textStyle={{
@@ -127,14 +176,14 @@ const Home = () => {
             selectedDayStyle={{
               backgroundColor: '#87cefa'
             }} />
-        </View>
+        </View>)}
         <View >
           <View style={{ flexGrow: 1 }}>
             <Text style={styles.text}>Slots Available :</Text>
 
             <ScrollView style={styles.scrollcontainer}>
               <View style={styles.timeSlotTable}>
-                {bookDate && (availableSlots.map((eachTime, index) => (
+                {bookDate && hospital && (availableSlots.map((eachTime, index) => (
                   <View key={eachTime}>
                     {timeSlots[index] ? (
                       <TouchableOpacity
