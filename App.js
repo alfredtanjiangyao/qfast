@@ -4,7 +4,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/login';
-import Signup from './src/screens/signup';
+import Signup from './src/screens/signup2';
 import Dashboard from './src/screens/dashboard';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
@@ -16,7 +16,7 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Booking"
+      initialRouteName="Signup"
       screenOptions={{
         headerTitleAlign: 'center',
         headerStyle: {
