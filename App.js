@@ -22,6 +22,7 @@ import Register from './staff page/register'
 
 
 const Stack = createStackNavigator();
+
 function MyStack() {
   return (
     <Stack.Navigator
@@ -57,7 +58,7 @@ function MyStack() {
           { headerLeft: null }
         ]}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="Booking"
         component={Booking} />
         <Stack.Screen
@@ -65,7 +66,7 @@ function MyStack() {
         component={Register} />
         <Stack.Screen
         name="Home"
-        component={Home} />
+        component={Home} /> */}
     </Stack.Navigator>
   );
 }
