@@ -100,7 +100,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontFamily: "Raleway-Regular",
         fontWeight: '600'
     },
     regbuttonPressed: {

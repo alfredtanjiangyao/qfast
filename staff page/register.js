@@ -1,13 +1,13 @@
 import { db } from '../src/firebase/config';
 import { collection, addDoc, getDoc, doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
-import { View, Text, TimePickerAndroid, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TextInput, Button, Dialog } from 'react-native-paper';
 
 
 // register new hospital 
-const register = () => {
+const Register = () => {
     const [clinicName, setClinicName] = useState('');
     const [maxSlot, setmaxSlot] = useState('');
     const [show, setShow] = useState(false);
@@ -167,4 +167,4 @@ const styles = StyleSheet.create({
         marginBottom: 20
     }
 })
-export default register;
+export default Register;

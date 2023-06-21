@@ -15,6 +15,8 @@ export default class Dashboard extends Component {
       uid: ''
     }
   }
+  
+
   signOut = () => { /////logout button function
     signOut(auth).then(() => {
       this.props.navigation.navigate('Login')
@@ -22,22 +24,44 @@ export default class Dashboard extends Component {
       .catch(error => this.setState({ errorMessage: error.message }))
   }
 
+
   render() {
+
     const images = [
       'https://i.pinimg.com/originals/ea/7f/2d/ea7f2dd47969349da148ea0b4ec56815.gif',
-      'https://cdn.dribbble.com/users/1894420/screenshots/13451478/media/78c49f99bd43529bb5df7ae50052158c.gif'
+      'https://cdn.dribbble.com/users/1894420/screenshots/13451478/media/78c49f99bd43529bb5df7ae50052158c.gif',
+      'https://media.istockphoto.com/id/1141047691/vector/patients-people-waiting-for-doctor-in-line-doctor-office-medicine-aid-clinic-concept-vector.jpg?s=612x612&w=0&k=20&c=xcJsm3gqfEGsYrYkFoerTQyO1NKTMd9olVXrnh5t2GE='
 
       // Add more images here
     ];
+    const staffPress = () => {
+      this.props.navigation.navigate('Home');
+    };
+    const bookPress = () => {
+      this.props.navigation.navigate('Booking');
+    };
 
+    // const editPress = () => {
+    //   this.props.navigation.navigate('');
+    // };
+
+    // const profilePress = () => {
+    //   this.props.navigation.navigate('Home');
+    // };
 
     return (
       <View style={styles.container}>
+        <View style={styles.titlecon}>
+        <Text style={styles.title}>
+    Welcome{"\n"}
+    <Text style={styles.username}>Lynette</Text>
+  </Text>
+        </View>
         <View style={styles.carouselContainer}>
           <Swiper
             showsButtons={true}
             autoplay={true}
-            autoplayTimeout={5} 
+            autoplayTimeout={5}
             loop={true}
           >
             {images.map((image, index) => (
@@ -48,59 +72,63 @@ export default class Dashboard extends Component {
 
           </Swiper>
         </View>
-        <View style = {styles.buttoncon}>
-        <IconButton
-          icon={({ color, size }) => (
-            <View style={styles.iconContainer}>
-              <Image source={require('../../assets/hospital.png')} style={styles.icon} />
-            </View>
-          )}
-          style = {styles.hospital}
-          //iconColor={MD3Colors.error50}
-          size={200}
-          mode = 'contained-tonal'
-          onPress={() => console.log('Pressed')}
-        />
-        <IconButton
-          icon={({ color, size }) => (
-            <View style={styles.iconContainer}>
-              <Image source={require('../../assets/book.png')} style={styles.icon} />
-            </View>
-          )}
-          style = {styles.book}
-          iconColor={MD3Colors.error50}
-          size={100}
-          mode = 'contained-tonal'
-          onPress={() => console.log('Pressed')}
-        />
+        <View style={styles.buttoncon}>
+        <View style = {styles.buttonrow}>
+          <IconButton
+            icon={({ color, size }) => (
+              <View style={styles.iconContainer}>
+                <Image source={require('../../assets/hospital.png')} style={styles.icon} />
+              </View>
+            )}
+            style={styles.hospital}
+            //iconColor={MD3Colors.error50}
+            size={200}
+            mode='contained-tonal'
+            onPress={staffPress}
+          />
+          <IconButton
+            icon={({ color, size }) => (
+              <View style={styles.iconContainer}>
+                <Image source={require('../../assets/book.png')} style={styles.icon} />
+              </View>
+            )}
+            style={styles.book}
+            iconColor={MD3Colors.error50}
+            size={100}
+            mode='contained-tonal'
+            onPress={bookPress}
+          />
         </View>
-        <View style = {styles.buttoncon}>
-        <IconButton
-          icon={({ color, size }) => (
-            <View style={styles.iconContainer}>
-              <Image source={require('../../assets/edit.png')} style={styles.icon} />
-            </View>
-          )}
-          style = {styles.edit}
-          iconColor={MD3Colors.error50}
-          size={100}
-          mode = 'contained-tonal'
-          onPress={() => console.log('Pressed')}
-        />
-        <IconButton
-          icon={({ color, size }) => (
-            <View style={styles.iconContainer}>
-              <Image source={require('../../assets/profile.png')} style={styles.icon} />
-            </View>
-          )}
-          style = {styles.profile}
-          iconColor={MD3Colors.error50}
-          size={100}
-          mode = 'contained-tonal'
-          onPress={() => console.log('Pressed')}
-        />
+       
+          <View style = {styles.buttonrow}>
+          <IconButton
+            icon={({ color, size }) => (
+              <View style={styles.iconContainer}>
+                <Image source={require('../../assets/edit.png')} style={styles.icon} />
+              </View>
+            )}
+            style={styles.edit}
+            iconColor={MD3Colors.error50}
+            size={100}
+            mode='contained-tonal'
+            onPress={() => console.log('Pressed')}
+          />
+          <IconButton
+            icon={({ color, size }) => (
+              <View style={styles.iconContainer}>
+                <Image source={require('../../assets/profile.png')} style={styles.icon} />
+              </View>
+            )}
+            style={styles.profile}
+            iconColor={MD3Colors.error50}
+            size={100}
+            mode='contained-tonal'
+            onPress={() => console.log('Pressed')}
+          />
+          </View>
+          </View>
         </View>
-      </View>
+     
     );
   }
 }
@@ -110,14 +138,33 @@ const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'flex-start',
+   // marginHorizontal: 20
+  },
+  titlecon: {
+    alignSelf: 'flex-start',
+    textAlign:'left',
+    flexDirection: 'row',
+    marginHorizontal: 20
+  },
+  title: {
+    fontStyle:'normal',
+    marginVertical: 10,
+    fontSize: 30,
+    fontWeight:'bold',
+    letterSpacing: 1,
+    fontFamily:'Cochin',
+  },
+  username: {
+    fontStyle: 'italic',
+    fontSize: 23,
   },
   carouselContainer: {
     //flex:2,
     justifyContent: 'flex-start',
-    height: windowHeight * 0.3, // Adjust the height as needed
+    height: windowHeight * 0.25, // Adjust the height as needed
+    marginTop: 10
   },
   imageContainer: {
     flex: 1,
@@ -127,55 +174,56 @@ const styles = StyleSheet.create({
   image: {
     //flex:1,
     width: windowWidth,
-    height: windowHeight * 0.3, // Adjust the height as needed
+    height: windowHeight * 0.25, // Adjust the height as needed
   },
-  title: {
-    fontWeight: 5,
-    marginBottom: 10,
-    color: 'white'
-  },
+
   buttoncon: {
-    paddingHorizontal: 30,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    //backgroundColor: 'navy',
+    marginVertical: 20
+  },
+  buttonrow: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
-    //backgroundColor: 'navy',
-    marginHorizontal: 20
   },
-    hospital: {
-      backgroundColor: 'lightcyan',
-      width: 170,
-      height: 170,
-      borderRadius: 20
-    },
-    book: {
-      backgroundColor: 'lightgoldenrodyellow',
-      width: 170,
-      height: 170,
-      borderRadius: 20
-    },
-    edit: {
-      backgroundColor: 'lavender',
-      width: 170,
-      height: 170,
-      borderRadius: 20
-    },
-    profile: {
-      backgroundColor: 'mistyrose',
-      width: 170,
-      height: 170,
-      borderRadius: 20
-    },
-    iconContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    icon: {
-     // resizeMode: 'contain',
-     height: 160,
-     width: 160
-    },
+  hospital: {
+    backgroundColor: 'lightcyan',
+    width: 170,
+    height: 170,
+    borderRadius: 20
+  },
+  book: {
+    backgroundColor: 'lightgoldenrodyellow',
+    width: 170,
+    height: 170,
+    borderRadius: 20
+  },
+  edit: {
+    backgroundColor: 'lavender',
+    width: 170,
+    height: 170,
+    borderRadius: 20
+  },
+  profile: {
+    backgroundColor: 'mistyrose',
+    width: 170,
+    height: 170,
+    borderRadius: 20
+  },
+  iconContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  icon: {
+    // resizeMode: 'contain',
+    height: 160,
+    width: 160
+  },
   inputView: {
     backgroundColor: "#FFC0CB",
     borderRadius: 30,
