@@ -98,50 +98,49 @@ export default class Signup extends Component {
     }
   };
 
+  // var actionCodeSettings = {
+  //   url: 'https://www.example.com/?email=' + firebase.auth().currentUser.email,
+  //   iOS: {
+  //     bundleId: 'com.example.ios'
+  //   },
+  //   android: {
+  //     packageName: 'com.example.android',
+  //     installApp: true,
+  //     minimumVersion: '12'
+  //   },
+  //   handleCodeInApp: true,
+  //   // When multiple custom dynamic link domains are defined, specify which
+  //   // one to use.
+  //   dynamicLinkDomain: "example.page.link"
+  // };
+  // firebase.auth().currentUser.sendEmailVerification(actionCodeSettings)
+  //   .then(function() {
+  //     // Verification email sent.
+  //   })
+  //   .catch(function(error) {
+  //     // Error occurred. Inspect error.code.
+  //   });
+
+
+
   verificationEmail = async () => {
-    // try {
-    //   await auth.currentUser.sendEmailVerification({
-    //     handleCodeInApp: true,
-    //     url: "qfast-77dbc.firebaseapp.com",
-    //   });
-
-    //   console.log("Email Verification sent! Check your mailbox");
-    // } catch (error) {
-    //   console.error("Error sending email verification:", error);
-    // }
+    try {
       const user = auth.currentUser;
-    
-      if (user) {
-        try {
-          await user.sendEmailVerification({
-            handleCodeInApp: true,
-            url: "qfast-77dbc.firebaseapp.com",
-          });
+
+      await sendEmailVerification(user);
+
+      // await sendEmailVerification(user,{
+      //   handleCodeInApp: true,
+      //   url: 'noreply@qfast-77dbc.firebaseapp.com',
+      // });
+
+      Alert.alert("Email Verification sent! Check your mailbox", "");
+
       
-          console.log("Email Verification sent! Check your mailbox");
-        } catch (error) {
-          console.error("Error sending email verification:", error);
-        }
-      }
-    
-
-    // if (user) {
-    //   user
-    //     .sendEmailVerification()
-    //     .then(() => {
-    //       // Re-enable button
-    //       document.getElementById("verify_email_button").disabled = false;
-
-    //       // Display success message
-    //       const email = user.email;
-    //       console.log(`Verification email sent to ${email}`);
-    //       // You can show a toast or a notification with the success message
-    //     })
-    //     .catch((error) => {
-    //       console.error("Failed to send verification email:", error);
-    //       // You can show an error message or handle the error appropriately
-    //     });
-    // }
+    } catch (error) {
+      Alert.alert(error);
+      // console.error(error);
+    }
   };
 
   registerUserUsingEmail = async () => {
@@ -180,12 +179,10 @@ export default class Signup extends Component {
 
       //save as same document but different field
       const res = await createUserWithEmailAndPassword(auth, email, password);
-
       const usersCollectionRef = collection(db, "users");
-
       const userDocRef = doc(usersCollectionRef, res.user.uid);
 
-      // const userDocRef = doc(db, 'users', res.user.uid);
+      await this.verificationEmail();
 
       await setDoc(userDocRef, {
         username: username,
@@ -193,9 +190,7 @@ export default class Signup extends Component {
         password: password,
       });
 
-      await this.verificationEmail();
-
-      console.log("User registered successfully!");
+      Alert.alert("User registered successfully!", "");
 
       this.setState({
         username: "",
