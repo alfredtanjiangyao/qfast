@@ -12,8 +12,8 @@ export default class Dashboard extends Component {
   constructor() {
     super();
     this.state = {
-      uid: ''
-    }
+      uid: "",
+    };
   }
   
 
@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
+    backgroundColor:'lightsteelblue'
    // marginHorizontal: 20
   },
   titlecon: {
@@ -259,13 +260,13 @@ const styles = StyleSheet.create({
   },
 
   loginText: {
-    color: '#000000',
+    color: "#000000",
     marginTop: 0,
     textAlign: 'center'
-  },
-
-  textStyle: {
+    },
+  
+  textStyle:{
     color: '#FFFFFF',
     textAlign: 'center',
   }
-});
+  });
