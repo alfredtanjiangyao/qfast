@@ -126,17 +126,16 @@ export default class Signup extends Component {
   verificationEmail = async () => {
     try {
       const user = auth.currentUser;
+      const email = user.email;
 
-      await sendEmailVerification(user);
-
-      // await sendEmailVerification(user,{
-      //   handleCodeInApp: true,
-      //   url: 'noreply@qfast-77dbc.firebaseapp.com',
-      // });
-
+      const actionCodeSettings = {
+        handleCodeInApp: true,
+        url: `https://noreply@qfast-77dbc.firebaseapp.com/?email=${email}`, // Replace with your app's verification URL
+      };
+  
+      await sendEmailVerification(user, actionCodeSettings);
+  
       Alert.alert("Email Verification sent! Check your mailbox", "");
-
-      
     } catch (error) {
       Alert.alert(error);
       // console.error(error);
