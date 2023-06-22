@@ -93,39 +93,14 @@ export default class Signup extends Component {
       }
       return true;
     } catch (error) {
-      console.error("Error checking email availability:", error);
+      Alert.alert(error);
+      // console.error("Error checking email availability:", error);
       return false;
     }
   };
 
-  // var actionCodeSettings = {
-  //   url: 'https://www.example.com/?email=' + firebase.auth().currentUser.email,
-  //   iOS: {
-  //     bundleId: 'com.example.ios'
-  //   },
-  //   android: {
-  //     packageName: 'com.example.android',
-  //     installApp: true,
-  //     minimumVersion: '12'
-  //   },
-  //   handleCodeInApp: true,
-  //   // When multiple custom dynamic link domains are defined, specify which
-  //   // one to use.
-  //   dynamicLinkDomain: "example.page.link"
-  // };
-  // firebase.auth().currentUser.sendEmailVerification(actionCodeSettings)
-  //   .then(function() {
-  //     // Verification email sent.
-  //   })
-  //   .catch(function(error) {
-  //     // Error occurred. Inspect error.code.
-  //   });
-
-
-
-  verificationEmail = async () => {
+  verificationEmail = async (user) => {
     try {
-      const user = auth.currentUser;
       const email = user.email;
 
       const actionCodeSettings = {
@@ -134,8 +109,13 @@ export default class Signup extends Component {
       };
   
       await sendEmailVerification(user, actionCodeSettings);
-  
+
       Alert.alert("Email Verification sent! Check your mailbox", "");
+
+      if(!user.emailVerified) {
+        Alert.alert("Email not verified", "Please verify your email.");
+      }
+
     } catch (error) {
       Alert.alert(error);
       // console.error(error);
@@ -165,7 +145,7 @@ export default class Signup extends Component {
         Alert.alert("Username taken", "Please choose a different username.");
         return;
       }
-
+      
       // Check email availability
       const isEmailAvailable = await this.checkEmailAvailability();
       if (!isEmailAvailable) {
@@ -181,7 +161,9 @@ export default class Signup extends Component {
       const usersCollectionRef = collection(db, "users");
       const userDocRef = doc(usersCollectionRef, res.user.uid);
 
-      await this.verificationEmail();
+      const user = auth.currentUser;
+
+      await this.verificationEmail(user);
 
       await setDoc(userDocRef, {
         username: username,
