@@ -1,6 +1,7 @@
-import { View, Text, Button, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Button, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { useEffect, useState } from "react";
-import { db } from "./src/firebase/config";
+import { db, auth } from "./src/firebase/config";
+
 import {
   collection,
   onSnapshot,
@@ -11,6 +12,7 @@ import {
   listCollections,
   doc,
   getDoc,
+  setDoc,
 } from "firebase/firestore";
 import CalendarPicker from "react-native-calendar-picker";
 import moment from "moment";
@@ -32,6 +34,33 @@ const Home = () => {
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
   const colRef = collection(db, "clinics");
+  const [userDoc, setUserDoc] = useState(null); // refer to the user email doc
+  const [email, setEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  //const email = userDocRef.email; 
+  useEffect(() => {
+    //refer user doc
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const userDoc = doc(collection(db, 'users'), user.uid);
+        setUserDoc(userDoc);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          const email = docSnap.data().email;
+          setEmail(docSnap.data().email);
+          setUserName(docSnap.data().username);
+          console.log("Email value retrieved from the document:", email);
+        } else {
+          console.log("User document does not exist");
+        }
+      } else {
+        setUserDoc(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     // Fetch the list of Clinics docs
     const fetchCollections = async () => {
@@ -84,7 +113,7 @@ const Home = () => {
           // Increment the time by 30 minutes
           currentTime.setMinutes(currentTime.getMinutes() + 30);
         }
-        console.log(slots);
+        //console.log(slots);
         return slots;
       };
 
@@ -94,8 +123,8 @@ const Home = () => {
     setBookTime("");
   }, [bookDate, hospital, endTime]);
   async function isSlotAvailable(dt, tm) {
-    console.log("Date:", dt);
-    console.log("Time:", tm);
+    // console.log("Date:", dt);
+    // console.log("Time:", tm);
     //const formattedDate = dt.substring(0, 10);
     const q = query(
       bookingRef,
@@ -103,10 +132,10 @@ const Home = () => {
       where("time", "==", tm)
     );
     const snapshot = await getDocs(q);
-    console.log(maxSlot);
+    // console.log(maxSlot);
     // Check if the number of bookings for the slot is less than 5
     const isAvailable = snapshot.size < maxSlot;
-    console.log(snapshot.size);
+    // console.log(snapshot.size);
     return isAvailable;
   }
   useEffect(() => {
@@ -147,12 +176,24 @@ const Home = () => {
   const handlePickerChange = (itemValue) => {
     setHospital(itemValue);
   };
-  const handleSubmit = () => {
-    const newBookingData = {
+  const handleSubmit = async () => {
+    const clinicData = {
+      email: email,
       date: bookDate,
       time: bookTime,
     };
-    addDoc(bookingRef, newBookingData)
+    const userData = {
+      date: bookDate,
+      time: bookTime,
+      hospital: hospital
+    }
+    //add data to clinic 
+    const userNameRef = doc(bookingRef, userName);
+    await setDoc(userNameRef, clinicData);
+
+    //add data to user
+    const col = collection(userDoc, 'booking'); // subcollection of each user
+    addDoc(col, userData) // doc of each booking
       .then(() => {
         console.log("Booking data saved successfully!");
       })
@@ -167,16 +208,14 @@ const Home = () => {
   };
 
   return (
-    <View style={{ flexGrow: 1, backgroundColor: "white" }}>
+    <View style={styles.whole}>
       <View style={styles.container}>
-        <View>
-          <Picker selectedValue={hospital} onValueChange={handlePickerChange}>
-            <Picker.Item label="Select a hospital" value="" />
-            {collections.map((clinics, index) => (
-              <Picker.Item key={index} label={clinics} value={clinics} />
-            ))}
-          </Picker>
-        </View>
+        <Picker selectedValue={hospital} onValueChange={handlePickerChange}>
+          <Picker.Item label="Select a hospital" value="" />
+          {collections.map((clinics, index) => (
+            <Picker.Item key={index} label={clinics} value={clinics} />
+          ))}
+        </Picker>
         <Text style={styles.text}>Select a date:</Text>
 
         {hospital && (
@@ -197,38 +236,37 @@ const Home = () => {
           </View>
         )}
         <View>
-          <View style={{ flexGrow: 1 }}>
-            <Text style={styles.text}>Slots Available :</Text>
+          <Text style={styles.text}>Slots Available :</Text>
 
-            <ScrollView style={styles.scrollcontainer}>
-              <View style={styles.timeSlotTable}>
-                {bookDate &&
-                  hospital &&
-                  availableSlots.map((eachTime, index) => (
-                    <View key={eachTime}>
-                      {timeSlots[index] ? (
-                        <TouchableOpacity
-                          onPress={() => setBookTime(eachTime)}
-                          style={[
-                            styles.timeSlot,
-                            availableSlots[index] === bookTime
-                              ? styles.selectedSlot
-                              : null,
-                          ]}
-                        >
-                          <Text style={styles.timeSlotText}>{eachTime}</Text>
-                        </TouchableOpacity>
-                      ) : (
-                        <View style={[styles.timeSlot, styles.unavailableSlot]}>
-                          <Text style={styles.timeSlotText}>{eachTime}</Text>
-                        </View>
-                      )}
-                    </View>
-                  ))}
-              </View>
-            </ScrollView>
-          </View>
+          <ScrollView style={styles.scrollcontainer} contentContainerStyle={styles.scrollContentContainer}>
+            <View style={styles.timeSlotTable}>
+              {bookDate &&
+                hospital &&
+                availableSlots.map((eachTime, index) => (
+                  <View key={eachTime}>
+                    {timeSlots[index] ? (
+                      <TouchableOpacity
+                        onPress={() => setBookTime(eachTime)}
+                        style={[
+                          styles.timeSlot,
+                          availableSlots[index] === bookTime
+                            ? styles.selectedSlot
+                            : null,
+                        ]}
+                      >
+                        <Text style={styles.timeSlotText}>{eachTime}</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <View style={[styles.timeSlot, styles.unavailableSlot]}>
+                        <Text style={styles.timeSlotText}>{eachTime}</Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
+            </View>
+          </ScrollView>
         </View>
+
         {bookTime && (
           <View style={styles.button}>
             <Button title="Book" onPress={handleSubmit} />
@@ -238,17 +276,28 @@ const Home = () => {
     </View>
   );
 };
+const windowHeight = Dimensions.get('window').height;
 const styles = StyleSheet.create({
+  whole: {
+    backgroundColor: 'cornsilk',
+    flex: 1
+  },
   container: {
     justifyContent: "center",
     marginVertical: 30,
     marginHorizontal: 20,
-    //flexGrow :1
+    //flex :1,
+    //backgroundColor:'blue'
   },
   scrollcontainer: {
-    maxHeight: 340,
+    //flex: 1,
+    maxHeight: 400,
     backgroundColor: "oldlace",
     borderRadius: 20,
+  },
+  scrollContentContainer: {
+    //flex: 1,
+    justifyContent: "flex-end",
   },
   text: {
     textAlign: "left",
@@ -282,13 +331,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   button: {
-    position: "absolute",
+    //position: "absolute",
     bottom: 20,
     width: "100%",
     borderWidth: 2,
     borderRadius: 10,
     padding: 5,
     backgroundColor: "white",
+    marginTop: "auto"
   },
 });
 

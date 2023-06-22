@@ -3,7 +3,6 @@ import "firebase/auth";
 import { FirebaseAuthProvider, IfFirebaseAuthed } from "@react-firebase/auth";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider, db } from "../firebase/config";
-
 import { StatusBar } from "expo-status-bar";
 import {
   KeyboardAvoidingView,

@@ -35,6 +35,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+let userDocRef = null; // need to retrieve it 
+
 export default class Signup extends Component {
   constructor() {
     super();
@@ -180,7 +182,7 @@ export default class Signup extends Component {
       //save as same document but different field
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const usersCollectionRef = collection(db, "users");
-      const userDocRef = doc(usersCollectionRef, res.user.uid);
+       userDocRef = doc(usersCollectionRef, res.user.uid);
 
       await this.verificationEmail();
 
@@ -334,3 +336,4 @@ const styles = StyleSheet.create({
 });
 
 // namespace is not allowed!
+export { userDocRef };
