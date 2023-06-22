@@ -93,7 +93,7 @@ export default class Signup extends Component {
       }
       return true;
     } catch (error) {
-      Alert.alert(error);
+      Alert.alert('Error', error);
       // console.error("Error checking email availability:", error);
       return false;
     }
@@ -321,3 +321,4 @@ const styles = StyleSheet.create({
 });
 
 // namespace is not allowed!
+//how to use alert when there is an error occured ???
