@@ -112,10 +112,6 @@ export default class Signup extends Component {
 
       Alert.alert("Email Verification sent! Check your mailbox", "");
 
-      if(!user.emailVerified) {
-        Alert.alert("Email not verified", "Please verify your email.");
-      }
-
     } catch (error) {
       Alert.alert(error);
       // console.error(error);
@@ -145,7 +141,7 @@ export default class Signup extends Component {
         Alert.alert("Username taken", "Please choose a different username.");
         return;
       }
-      
+
       // Check email availability
       const isEmailAvailable = await this.checkEmailAvailability();
       if (!isEmailAvailable) {
@@ -164,6 +160,16 @@ export default class Signup extends Component {
       const user = auth.currentUser;
 
       await this.verificationEmail(user);
+
+      var count = 1;
+
+      while(!user.emailVerified){
+        if(count === 1){
+          Alert.alert("Email not verified", "Please verify your email.");
+        }
+        await user.reload();
+        count++;
+      }
 
       await setDoc(userDocRef, {
         username: username,
