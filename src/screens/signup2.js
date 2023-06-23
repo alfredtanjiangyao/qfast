@@ -72,7 +72,7 @@ export default class Signup extends Component {
         return true;
       }
     } catch (error) {
-      console.error("Error checking username availability:", error);
+      Alert.alert(error.message);
       return false;
     }
   };
@@ -93,8 +93,7 @@ export default class Signup extends Component {
       }
       return true;
     } catch (error) {
-      Alert.alert('Error', error);
-      // console.error("Error checking email availability:", error);
+      Alert.alert(error.message);
       return false;
     }
   };
@@ -107,14 +106,12 @@ export default class Signup extends Component {
         handleCodeInApp: true,
         url: `https://noreply@qfast-77dbc.firebaseapp.com/?email=${email}`, // Replace with your app's verification URL
       };
-  
+
       await sendEmailVerification(user, actionCodeSettings);
 
       Alert.alert("Email Verification sent! Check your mailbox", "");
-
     } catch (error) {
-      Alert.alert(error);
-      // console.error(error);
+      Alert.alert(error.message);
     }
   };
 
@@ -163,8 +160,8 @@ export default class Signup extends Component {
 
       var count = 1;
 
-      while(!user.emailVerified){
-        if(count === 1){
+      while (!user.emailVerified) {
+        if (count === 1) {
           Alert.alert("Email not verified", "Please verify your email.");
         }
         await user.reload();
@@ -188,7 +185,7 @@ export default class Signup extends Component {
 
       this.props.navigation.navigate("Dashboard");
     } catch (error) {
-      console.error("Error registering user:", error);
+      Alert.alert("Error registering user:", error.message);
       this.setState({ loading: false });
       return;
     }
@@ -320,5 +317,5 @@ const styles = StyleSheet.create({
   },
 });
 
-// namespace is not allowed!
-//how to use alert when there is an error occured ???
+// namespace is not allowed! when typing email
+// specific error(use alert)
