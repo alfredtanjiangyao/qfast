@@ -1,11 +1,15 @@
 // components/dashboard.js
 import React, { Component } from 'react';
+import { useEffect, useState } from "react";
 import { TouchableOpacity, StyleSheet, Text, View, Image, Button, Dimensions } from 'react-native';
 import Swiper from 'react-native-swiper';
 import { getAuth, signOut } from "firebase/auth";
 import { IconButton, MD3Colors } from 'react-native-paper';
+import { collection, doc, getDoc } from "firebase/firestore";
+import { db } from '../firebase/config';
 
 const auth = getAuth();
+
 
 
 export default class Dashboard extends Component {
@@ -13,9 +17,30 @@ export default class Dashboard extends Component {
     super();
     this.state = {
       uid: "",
+      userName: "", // Initialize userName in the state
+      errorMessage: ""
     };
   }
-  
+  componentDidMount() {
+    const { setUserName } = this;
+    // Set up listener for changes in authentication state
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // User is logged in
+        const userDoc = doc(collection(db, 'users'), user.uid);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          setUserName(docSnap.data().username);
+        } else {
+          console.log("User document does not exist");
+        }
+        //this.setUserName(username);
+      }
+    });
+  }
+  setUserName = (name) => {
+    this.setState({ userName: name });
+  };
 
   signOut = () => { /////logout button function
     signOut(auth).then(() => {
@@ -26,7 +51,7 @@ export default class Dashboard extends Component {
 
 
   render() {
-
+    const { userName } = this.state;
     const images = [
       'https://i.pinimg.com/originals/ea/7f/2d/ea7f2dd47969349da148ea0b4ec56815.gif',
       'https://cdn.dribbble.com/users/1894420/screenshots/13451478/media/78c49f99bd43529bb5df7ae50052158c.gif',
@@ -41,9 +66,9 @@ export default class Dashboard extends Component {
       this.props.navigation.navigate('Booking');
     };
 
-    // const editPress = () => {
-    //   this.props.navigation.navigate('');
-    // };
+    const editPress = () => {
+      this.props.navigation.navigate('Edit');
+    };
 
     // const profilePress = () => {
     //   this.props.navigation.navigate('Home');
@@ -52,10 +77,10 @@ export default class Dashboard extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.titlecon}>
-        <Text style={styles.title}>
-    Welcome{"\n"}
-    <Text style={styles.username}>Lynette</Text>
-  </Text>
+          <Text style={styles.title}>
+            Welcome{"\n"}
+            <Text style={styles.username}>  {userName}</Text>
+          </Text>
         </View>
         <View style={styles.carouselContainer}>
           <Swiper
@@ -73,62 +98,62 @@ export default class Dashboard extends Component {
           </Swiper>
         </View>
         <View style={styles.buttoncon}>
-        <View style = {styles.buttonrow}>
-          <IconButton
-            icon={({ color, size }) => (
-              <View style={styles.iconContainer}>
-                <Image source={require('../../assets/hospital.png')} style={styles.icon} />
-              </View>
-            )}
-            style={styles.hospital}
-            //iconColor={MD3Colors.error50}
-            size={200}
-            mode='contained-tonal'
-            onPress={staffPress}
-          />
-          <IconButton
-            icon={({ color, size }) => (
-              <View style={styles.iconContainer}>
-                <Image source={require('../../assets/book.png')} style={styles.icon} />
-              </View>
-            )}
-            style={styles.book}
-            iconColor={MD3Colors.error50}
-            size={100}
-            mode='contained-tonal'
-            onPress={bookPress}
-          />
-        </View>
-       
-          <View style = {styles.buttonrow}>
-          <IconButton
-            icon={({ color, size }) => (
-              <View style={styles.iconContainer}>
-                <Image source={require('../../assets/edit.png')} style={styles.icon} />
-              </View>
-            )}
-            style={styles.edit}
-            iconColor={MD3Colors.error50}
-            size={100}
-            mode='contained-tonal'
-            onPress={() => console.log('Pressed')}
-          />
-          <IconButton
-            icon={({ color, size }) => (
-              <View style={styles.iconContainer}>
-                <Image source={require('../../assets/profile.png')} style={styles.icon} />
-              </View>
-            )}
-            style={styles.profile}
-            iconColor={MD3Colors.error50}
-            size={100}
-            mode='contained-tonal'
-            onPress={() => console.log('Pressed')}
-          />
+          <View style={styles.buttonrow}>
+            <IconButton
+              icon={({ color, size }) => (
+                <View style={styles.iconContainer}>
+                  <Image source={require('../../assets/hospital.png')} style={styles.icon} />
+                </View>
+              )}
+              style={styles.hospital}
+              //iconColor={MD3Colors.error50}
+              size={200}
+              mode='contained-tonal'
+              onPress={staffPress}
+            />
+            <IconButton
+              icon={({ color, size }) => (
+                <View style={styles.iconContainer}>
+                  <Image source={require('../../assets/book.png')} style={styles.icon} />
+                </View>
+              )}
+              style={styles.book}
+              iconColor={MD3Colors.error50}
+              size={100}
+              mode='contained-tonal'
+              onPress={bookPress}
+            />
           </View>
+
+          <View style={styles.buttonrow}>
+            <IconButton
+              icon={({ color, size }) => (
+                <View style={styles.iconContainer}>
+                  <Image source={require('../../assets/edit.png')} style={styles.icon} />
+                </View>
+              )}
+              style={styles.edit}
+              iconColor={MD3Colors.error50}
+              size={100}
+              mode='contained-tonal'
+              onPress={editPress}
+            />
+            <IconButton
+              icon={({ color, size }) => (
+                <View style={styles.iconContainer}>
+                  <Image source={require('../../assets/profile.png')} style={styles.icon} />
+                </View>
+              )}
+              style={styles.profile}
+              iconColor={MD3Colors.error50}
+              size={100}
+              mode='contained-tonal'
+              onPress={() => console.log('Pressed')}
+            />
           </View>
         </View>
-     
+      </View>
+
     );
   }
 }
@@ -140,26 +165,28 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor:'lightsteelblue'
-   // marginHorizontal: 20
+    backgroundColor: 'lightsteelblue'
+    // marginHorizontal: 20
   },
   titlecon: {
     alignSelf: 'flex-start',
-    textAlign:'left',
+    textAlign: 'left',
     flexDirection: 'row',
     marginHorizontal: 20
   },
   title: {
-    fontStyle:'normal',
+    fontStyle: 'normal',
     marginVertical: 10,
+    
     fontSize: 30,
-    fontWeight:'bold',
+    fontWeight: 'bold',
     letterSpacing: 1,
-    fontFamily:'Cochin',
+    fontFamily: 'Cochin',
   },
   username: {
     fontStyle: 'italic',
     fontSize: 23,
+    marginHorizontal: 20,
   },
   carouselContainer: {
     //flex:2,
@@ -263,10 +290,10 @@ const styles = StyleSheet.create({
     color: "#000000",
     marginTop: 0,
     textAlign: 'center'
-    },
-  
-  textStyle:{
+  },
+
+  textStyle: {
     color: '#FFFFFF',
     textAlign: 'center',
   }
-  });
+});

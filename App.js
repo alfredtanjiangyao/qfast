@@ -13,7 +13,8 @@ import { KeyboardAvoidingView, SafeAreaView, TouchableOpacity, TextInput, StyleS
 import 'firebase/auth';
 import Booking from './booking';
 import Home from './staff page/home';
-import Register from './staff page/register'
+import Register from './staff page/register';
+import Edit from './edit';
 
 // export default function App() {
 //   return (
@@ -61,12 +62,15 @@ function MyStack() {
       <Stack.Screen
         name="Booking"
         component={Booking} />
-        <Stack.Screen
+      <Stack.Screen
         name="Register"
         component={Register} />
-        <Stack.Screen
+      <Stack.Screen
         name="Home"
         component={Home} />
+      <Stack.Screen
+        name="Edit"
+        component={Edit} />
     </Stack.Navigator>
   );
 }

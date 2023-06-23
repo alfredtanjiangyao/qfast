@@ -46,7 +46,7 @@ export default class Login extends Component {
 
         const res = await signInWithEmailAndPassword(auth, email, password);
 
-        console.log(res);
+        //console.log(res);
         console.log("User logged-in successfully!");
 
         this.setState({

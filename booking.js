@@ -173,8 +173,16 @@ const Home = () => {
     fetchData();
   }, [hospital]);
 
-  const handlePickerChange = (itemValue) => {
-    setHospital(itemValue);
+  const handlePickerChange = async (itemValue) => {
+    console.log(itemValue);
+     const snap = await getDoc(doc(db, 'clinics', itemValue, 'bookings', userName))
+     if(snap.exists()) {
+      alert('You have a booking for \${itemValue}\. If you would like to change it, please delete the booking first.')
+      
+     } else {
+       setHospital(itemValue); //// user can only choose one slot for each hospital
+     }
+   
   };
   const handleSubmit = async () => {
     const clinicData = {
