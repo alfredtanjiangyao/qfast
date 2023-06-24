@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-const App = () => {
+const Home = () => {
     const [isRegPressed, setIsRegPressed] = useState(false);
     const [isViewPressed, setIsViewPressed] = useState(false);
     const navigation = useNavigation();
@@ -109,4 +109,4 @@ const styles = StyleSheet.create({
         backgroundColor: 'skyblue',
     },
 });
-export default App;
+export default Home;
