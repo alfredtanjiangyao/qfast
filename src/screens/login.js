@@ -31,6 +31,17 @@ import {
 // } from "@react-native-google-signin/google-signin";
 import Home from "../../staff page/home";
 import Booking from "../../booking";
+import { QuerySnapshot } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 export default class Login extends Component {
   constructor() {
@@ -77,7 +88,7 @@ export default class Login extends Component {
         password: "",
       });
 
-      navigation.navigate("Dashboard");
+      this.props.navigation.navigate("Dashboard");
 
       // this.props.navigation.navigate("Booking");
     } catch (error) {
@@ -87,7 +98,26 @@ export default class Login extends Component {
     }
   };
 
-  resetPasswordWithEmail = async () => {
+  resetPasswordWithEmail = async (user) => {
+    try {
+      const email = user.email;
+      // const actionCodeSettings = {
+      //   handleCodeInApp: true,
+      //   url: `https://noreply@qfast-77dbc.firebaseapp.com/?email=${email}`, // Replace with your app's verification URL
+      // };
+
+      await sendPasswordResetEmail(auth, email);
+      // await sendEmailVerification(user, actionCodeSettings);
+
+      Alert.alert("Password reset email sent!");
+    } catch (error) {
+      Alert.alert(error.message);
+      this.setState({ loading: false });
+      return;
+    }
+  };
+
+  resetPassword = async () => {
     try {
       const { email } = this.state;
 
@@ -98,26 +128,40 @@ export default class Login extends Component {
 
       this.setState({ loading: true });
 
-      const res = await sendPasswordResetEmail(auth, email);
+      const usersCollectionRef = collection(db, "users");
+      const userEmail = this.state.email;
+      const queryUserEmailRef = query(
+        usersCollectionRef,
+        where("email", "==", userEmail)
+      );
+      const querySnapshot = await getDocs(queryUserEmailRef);
 
-      Alert.alert("Password reset email sent!");
+      if (querySnapshot.empty) {
+        Alert.alert("User not authenticated", "Please sign up.");
+        this.setState({ loading: false });
+        return;
+      }
 
-      this.setState({ 
-        loading: false, 
-        email: "",
-        password: "",
-      });
+      const userDoc = querySnapshot.docs[0];
+      const user = userDoc.data();
+      const userId = userDoc.id;
 
+      // Send password reset email
+      await this.resetPasswordWithEmail(user);
 
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+      Alert.alert(
+        "You haven't reset your password",
+        "Please reset your password via email"
+      );
 
-      this.props.navigation.navigate("Home");
-
+      this.setState({ loading: false }); //interface回去login
     } catch (error) {
-      Alert.alert(error.message);
+      Alert.alert("Error registering user:", error.message);
       this.setState({ loading: false });
       return;
     }
-  }
+  };
 
   // userLoginWithGoogle = async () => {
   //   try {
@@ -134,38 +178,6 @@ export default class Login extends Component {
   // this.props.navigation.navigate("Dashboard");
   //   } catch (error) {
   //     Alert.alert(error.message);
-  //   }
-  // };
-
-  // userLoginWithGoogle = async () => {
-  //   try {
-  //     // Get the Google user details
-  //     await GoogleSignin.hasPlayServices();
-  //     const idToken = await GoogleSignin.signIn();
-
-  //     // Authenticate with Firebase
-  //     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-  //     await signInWithCredential(auth, googleCredential);
-
-  //     Alert.alert("User signed in successfully with Google!");
-
-  //     this.setState({ loading: true });
-
-  //     this.props.navigation.navigate("Dashboard");
-  //   } catch (error) {
-  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-  //       // User cancelled the sign-in flow
-  //       console.log("User cancelled the sign-in flow");
-  //     } else if (error.code === statusCodes.IN_PROGRESS) {
-  //       // Sign-in flow is already in progress
-  //       console.log("Sign-in flow is already in progress");
-  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-  //       // Play services not available or outdated
-  //       console.log("Play services not available or outdated");
-  //     } else {
-  //       // Some other error happened
-  //       console.log("Error:", error);
-  //     }
   //   }
   // };
 
@@ -207,16 +219,29 @@ export default class Login extends Component {
           />
         </View>
 
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text
-            style={styles.loginText}
-            onPress={() => {
-              this.userLoginWithEmail();
-            }}
-          >
-            LOGIN
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.loginBtn}>
+            <Text
+              style={styles.loginText}
+              onPress={() => {
+                this.userLoginWithEmail();
+              }}
+            >
+              LOGIN
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.forgotPasswordBtn}>
+            <Text
+              style={styles.loginText}
+              onPress={() => {
+                this.resetPassword();
+              }}
+            >
+              FORGOT PASSWORD
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity style={styles.signUpBtn}>
           <Text
@@ -224,15 +249,6 @@ export default class Login extends Component {
             onPress={() => this.props.navigation.navigate("Signup")}
           >
             Don't have account? Click here to signup
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.signUpBtn}>
-          <Text
-            style={styles.loginText}
-            onPress={() => this.resetPasswordWithEmail()}
-          >
-            Forgot password
           </Text>
         </TouchableOpacity>
 
@@ -252,9 +268,6 @@ export default class Login extends Component {
             Sign in with Google
           </Text>
         </TouchableOpacity> */}
-
-
-
       </SafeAreaView>
     );
   }
@@ -294,7 +307,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 0,
+    // marginTop: 0,
     backgroundColor: "#f0f8ff",
   },
 
@@ -307,22 +320,40 @@ const styles = StyleSheet.create({
     marginTop: 20,
     backgroundColor: "#f0f8ff",
   },
-  googleButton: {
-    backgroundColor: "white",
-    borderRadius: 4,
-    paddingHorizontal: 34,
-    paddingVertical: 16,
-    flexDirection: "row",
-    justifyContent: "center",
+
+  forgotPasswordBtn: {
+    width: "40%",
+    borderRadius: 25,
+    height: 50,
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f0f8ff",
   },
-  googleButtonText: {
-    marginLeft: 16,
-    fontSize: 18,
-    fontWeight: "600",
+
+  buttonContainer: {
+    flexDirection: "row",
+    // alignItems: 'center',
+    // width: "100%",
+    justifyContent: "space-between",
+    // marginHorizontal: 20,
+    // marginTop: 5
   },
-  googleIcon: {
-    height: 24,
-    width: 24,
-  },
+  // googleButton: {
+  //   backgroundColor: "white",
+  //   borderRadius: 4,
+  //   paddingHorizontal: 34,
+  //   paddingVertical: 16,
+  //   flexDirection: "row",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // googleButtonText: {
+  //   marginLeft: 16,
+  //   fontSize: 18,
+  //   fontWeight: "600",
+  // },
+  // googleIcon: {
+  //   height: 24,
+  //   width: 24,
+  // },
 });

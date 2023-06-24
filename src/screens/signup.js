@@ -54,7 +54,7 @@ export default class Signup extends Component {
     userState[prop] = val;
     this.setState(userState);
   };
-
+  
   //check the availibility of username
   checkUsernameAvailability = async () => {
     try {
@@ -162,6 +162,7 @@ export default class Signup extends Component {
 
       while (!user.emailVerified) {
         if (count === 1) {
+          await new Promise(resolve => setTimeout(resolve, 5000));
           Alert.alert("Email not verified", "Please verify your email.");
         }
         await user.reload();
@@ -171,7 +172,7 @@ export default class Signup extends Component {
       await setDoc(userDocRef, {
         username: username,
         email: email,
-        password: password,
+        // password: password,
       });
 
       Alert.alert("User registered successfully!", "");
