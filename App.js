@@ -4,7 +4,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/login';
-import Signup from './src/screens/signup2';
+import Signup from './src/screens/signup';
 import Dashboard from './src/screens/dashboard';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
@@ -58,7 +58,7 @@ function MyStack() {
           { headerLeft: null }
         ]}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Booking"
         component={Booking} />
         <Stack.Screen
@@ -66,7 +66,7 @@ function MyStack() {
         component={Register} />
         <Stack.Screen
         name="Home"
-        component={Home} /> */}
+        component={Home} />
     </Stack.Navigator>
   );
 }

@@ -1,12 +1,12 @@
 import React, { Component, useState, useEffect } from "react";
 import "firebase/auth";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   signInWithRedirect,
   signInWithCredential,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth, googleProvider, db } from "../firebase/config";
 
@@ -24,18 +24,13 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import GoogleButton from "react-google-button";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
-
-// GoogleSignin.configure({
-//   webClientId:
-//     "24806013722-7jpjdfk1dnfbn05trlmlicsma3p7a7e0.apps.googleusercontent.com",
-//   offlineAccess: true,
-// });
-
+// import GoogleButton from "react-google-button";
+// import {
+//   GoogleSignin,
+//   statusCodes,
+// } from "@react-native-google-signin/google-signin";
+import Home from "../../staff page/home";
+import Booking from "../../booking";
 
 export default class Login extends Component {
   constructor() {
@@ -53,13 +48,13 @@ export default class Login extends Component {
     this.setState(state);
   };
 
-  configureGoogleSign() {
-    GoogleSignin.configure({
-      webClientId:
-        "24806013722-7jpjdfk1dnfbn05trlmlicsma3p7a7e0.apps.googleusercontent.com",
-      offlineAccess: true,
-    });
-  }
+  // configureGoogleSign() {
+  //   GoogleSignin.configure({
+  //     webClientId:
+  //       "24806013722-7jpjdfk1dnfbn05trlmlicsma3p7a7e0.apps.googleusercontent.com",
+  //     offlineAccess: true,
+  //   });
+  // }
 
   userLoginWithEmail = async () => {
     try {
@@ -82,13 +77,47 @@ export default class Login extends Component {
         password: "",
       });
 
-      this.props.navigation.navigate("Dashboard");
+      navigation.navigate("Dashboard");
+
+      // this.props.navigation.navigate("Booking");
     } catch (error) {
       Alert.alert("Sign in error", error.message);
       this.setState({ loading: false });
       return;
     }
   };
+
+  resetPasswordWithEmail = async () => {
+    try {
+      const { email } = this.state;
+
+      if (!email) {
+        Alert.alert("Enter details to reset password!");
+        return;
+      }
+
+      this.setState({ loading: true });
+
+      const res = await sendPasswordResetEmail(auth, email);
+
+      Alert.alert("Password reset email sent!");
+
+      this.setState({ 
+        loading: false, 
+        email: "",
+        password: "",
+      });
+
+
+
+      this.props.navigation.navigate("Home");
+
+    } catch (error) {
+      Alert.alert(error.message);
+      this.setState({ loading: false });
+      return;
+    }
+  }
 
   // userLoginWithGoogle = async () => {
   //   try {
@@ -108,37 +137,37 @@ export default class Login extends Component {
   //   }
   // };
 
-  userLoginWithGoogle = async () => {
-    try {
-      // Get the Google user details
-      await GoogleSignin.hasPlayServices();
-      const idToken = await GoogleSignin.signIn();
+  // userLoginWithGoogle = async () => {
+  //   try {
+  //     // Get the Google user details
+  //     await GoogleSignin.hasPlayServices();
+  //     const idToken = await GoogleSignin.signIn();
 
-      // Authenticate with Firebase
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      await signInWithCredential(auth, googleCredential);
+  //     // Authenticate with Firebase
+  //     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+  //     await signInWithCredential(auth, googleCredential);
 
-      Alert.alert("User signed in successfully with Google!");
+  //     Alert.alert("User signed in successfully with Google!");
 
-      this.setState({ loading: true });
+  //     this.setState({ loading: true });
 
-      this.props.navigation.navigate("Dashboard");
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // User cancelled the sign-in flow
-        console.log("User cancelled the sign-in flow");
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // Sign-in flow is already in progress
-        console.log("Sign-in flow is already in progress");
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // Play services not available or outdated
-        console.log("Play services not available or outdated");
-      } else {
-        // Some other error happened
-        console.log("Error:", error);
-      }
-    }
-  };
+  //     this.props.navigation.navigate("Dashboard");
+  //   } catch (error) {
+  //     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+  //       // User cancelled the sign-in flow
+  //       console.log("User cancelled the sign-in flow");
+  //     } else if (error.code === statusCodes.IN_PROGRESS) {
+  //       // Sign-in flow is already in progress
+  //       console.log("Sign-in flow is already in progress");
+  //     } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+  //       // Play services not available or outdated
+  //       console.log("Play services not available or outdated");
+  //     } else {
+  //       // Some other error happened
+  //       console.log("Error:", error);
+  //     }
+  //   }
+  // };
 
   render() {
     if (this.state.loading) {
@@ -198,13 +227,16 @@ export default class Login extends Component {
           </Text>
         </TouchableOpacity>
 
-        {/* <View style={styles.container1}>
-          <Text>Auth!</Text>
-          <StatusBar style="auto"/>
-          <GoogleButton onClick={this.userLoginWithGoogle}/>
-        </View> */}
+        <TouchableOpacity style={styles.signUpBtn}>
+          <Text
+            style={styles.loginText}
+            onPress={() => this.resetPasswordWithEmail()}
+          >
+            Forgot password
+          </Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.googleButton}>
+        {/* <TouchableOpacity style={styles.googleButton}>
           <Image
             style={styles.googleIcon}
             source={{
@@ -219,18 +251,10 @@ export default class Login extends Component {
           >
             Sign in with Google
           </Text>
-        </TouchableOpacity>
-
-        {/* <TouchableOpacity style={styles.loginBtn}>
-          <Text
-            style={styles.loginText}
-            onPress={() => {
-              this.userLoginWithGoogle();
-            }}
-          >
-            Sign in with Google
-          </Text>
         </TouchableOpacity> */}
+
+
+
       </SafeAreaView>
     );
   }

@@ -19,7 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
 import Dashboard from "./src/screens/dashboard";
 
-const Home = () => {
+const Booking = () => {
   const [collections, setCollections] = useState([]);
   const [hospital, setHospital] = useState("");
   const [bookDate, setBookDate] = useState(null);
@@ -292,4 +292,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Booking;

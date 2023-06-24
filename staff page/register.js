@@ -7,7 +7,7 @@ import { TextInput, Button, Dialog } from 'react-native-paper';
 
 
 // register new hospital 
-const register = () => {
+const Register = () => {
     const [clinicName, setClinicName] = useState('');
     const [maxSlot, setmaxSlot] = useState('');
     const [show, setShow] = useState(false);
@@ -167,4 +167,4 @@ const styles = StyleSheet.create({
         marginBottom: 20
     }
 })
-export default register;
+export default Register;
