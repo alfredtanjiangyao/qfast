@@ -1,7 +1,6 @@
 
 // App.js
 import * as React from 'react';
-//import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/login';
@@ -16,13 +15,11 @@ import Home from './staff page/home';
 import Register from './staff page/register';
 import Edit from './edit';
 
-// export default function App() {
-//   return (
-//   );
-// }
 
 
 const Stack = createStackNavigator();
+
+
 
 function MyStack() {
   return (
@@ -75,8 +72,10 @@ function MyStack() {
   );
 }
 export default function App() {
+  
+  
   return (
-    <NavigationContainer>
+    <NavigationContainer >
       <MyStack />
     </NavigationContainer>
   );

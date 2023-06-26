@@ -7,18 +7,22 @@ import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
+import {API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID, MEASUREMENT_ID} from '@env';
 
-// import 'firebase/firestore' -> doesn't provide access to the 'getFirestore' function -> so we need to import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDDTzek1MiTGGBz0aFSUF4dtzwuzYd4Lqs",
-  authDomain: "qfast-77dbc.firebaseapp.com",
-  projectId: "qfast-77dbc",
-  storageBucket: "qfast-77dbc.appspot.com",
-  messagingSenderId: "24806013722",
-  appId: "1:24806013722:web:6060bc5454844bb37c0aa3",
-  measurementId: "G-HTVGB6SQ5C",
-};
+    apiKey: API_KEY || "your-default-api-key",
+    authDomain: AUTH_DOMAIN || "your-default-auth-domain",
+    projectId: PROJECT_ID || "your-default-project-id",
+    storageBucket: STORAGE_BUCKET || "your-default-storage-bucket",
+    messagingSenderId: MESSAGING_SENDER_ID || "your-default-sender-id",
+    appId: APP_ID || "your-default-app-id",
+    measurementId: MEASUREMENT_ID || "your-default-measurement-id",
+  };
+  
+  export default firebaseConfig;
+  
+
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
