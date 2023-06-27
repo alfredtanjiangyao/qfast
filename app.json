@@ -15,19 +15,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.orbital.qfast"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.orbital.qfast"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     }
-    
   }
 }

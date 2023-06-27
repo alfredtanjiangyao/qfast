@@ -25,8 +25,6 @@ import Edit from './edit';
 
 const Stack = createStackNavigator();
 
-
-
 function MyStack() {
   return (
     <Stack.Navigator
@@ -73,10 +71,8 @@ function MyStack() {
   );
 }
 export default function App() {
-  
-  
   return (
-    <NavigationContainer >
+    <NavigationContainer>
       <MyStack />
     </NavigationContainer>
   );

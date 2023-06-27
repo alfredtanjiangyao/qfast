@@ -91,7 +91,11 @@ export default class Login extends Component {
 
       // this.props.navigation.navigate("Booking");
     } catch (error) {
-      Alert.alert("Sign in error", error.message);
+      if (error.code === "auth/user-not-found"){
+        Alert.alert("Sign in error", "Please register your account");
+      } else {
+        Alert.alert("Sign in error", error.message);
+      }
       this.setState({ loading: false });
       return;
     }
@@ -333,7 +337,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     // alignItems: 'center',
     // width: "100%",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     // marginHorizontal: 20,
     // marginTop: 5
   },
