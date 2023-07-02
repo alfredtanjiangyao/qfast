@@ -18,16 +18,10 @@ import {
   View,
   Image,
 } from "react-native";
-import "firebase/auth";
 import Booking from "./booking";
 import Home from "./staff page/home";
 import Register from "./staff page/register";;
 import Edit from './edit';
-
-// export default function App() {
-//   return (
-//   );
-// }
 
 const Stack = createStackNavigator();
 
