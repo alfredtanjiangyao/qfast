@@ -6,9 +6,6 @@ import Login from './src/screens/login';
 import Signup from './src/screens/signup2';
 import Dashboard from './src/screens/dashboard';
 import 'firebase/auth';
-import Login from "./src/screens/login";
-import Signup from "./src/screens/signup";
-import Dashboard from "./src/screens/dashboard";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
