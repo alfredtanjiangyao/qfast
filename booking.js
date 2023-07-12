@@ -23,7 +23,6 @@ import Dashboard from "./src/screens/dashboard";
 
 const Booking = () => {
   const [collections, setCollections] = useState([]);
-  const [hospital, setHospital] = useState("");
   const [bookDate, setBookDate] = useState(null);
   const [bookTime, setBookTime] = useState("");
   const [bookingRef, setBookingRef] = useState(null); // refer to the clinic docs booking col
@@ -46,7 +45,7 @@ const Booking = () => {
         setUserDoc(userDoc);
         const docSnap = await getDoc(userDoc);
         if (docSnap.exists()) {
-          const email = docSnap.data().email;
+          const email = docSnap.data().email; //extra?
           setEmail(docSnap.data().email);
           setUserName(docSnap.data().username);
           console.log("Email value retrieved from the document:", email);
@@ -122,6 +121,7 @@ const Booking = () => {
     }
     setBookTime("");
   }, [bookDate, hospital, endTime]);
+
   async function isSlotAvailable(dt, tm) {
     // console.log("Date:", dt);
     // console.log("Time:", tm);
@@ -138,6 +138,7 @@ const Booking = () => {
     // console.log(snapshot.size);
     return isAvailable;
   }
+  
   useEffect(() => {
     const fetchData = async () => {
       const resolvedData = [];

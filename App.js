@@ -3,7 +3,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/login';
-import Signup from './src/screens/signup2';
+import Signup from './src/screens/signup';
 import Dashboard from './src/screens/dashboard';
 import 'firebase/auth';
 import { StatusBar } from "expo-status-bar";
@@ -22,13 +22,14 @@ import Booking from "./booking";
 import Home from "./staff page/home";
 import Register from "./staff page/register";;
 import Edit from './edit';
+import Profile from './profile';
 
 const Stack = createStackNavigator();
 
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName="Profile"
       screenOptions={{
         headerTitleAlign: "center",
         headerStyle: {
@@ -67,6 +68,9 @@ function MyStack() {
       <Stack.Screen
         name="Edit"
         component={Edit} />
+      <Stack.Screen
+        name="Profile"
+        component={Profile} />
     </Stack.Navigator>
   );
 }
