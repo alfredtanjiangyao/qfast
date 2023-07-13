@@ -26,8 +26,6 @@ import StaffView from './staff page/view';
 
 const Stack = createStackNavigator();
 
-
-
 function MyStack() {
   return (
     <Stack.Navigator
@@ -81,7 +79,7 @@ export default function App() {
 
 
   return (
-    <NavigationContainer >
+    <NavigationContainer>
       <MyStack />
     </NavigationContainer>
   );
