@@ -285,12 +285,9 @@ const styles = StyleSheet.create({
     alignItems: "left",
   },
   TextInput: {
-    //backgroundColor: '#FFC0CB',
-    //borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 5,
     width: 300,
-    height: 50,
     paddingLeft: 5,
     fontWeight: "200",
     //textAlign: 'left'

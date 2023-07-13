@@ -205,13 +205,17 @@ export default class Signup extends Component {
     }
 
     return (
+      <KeyboardAvoidingView
+      style={[{ flex: 1 }, styles.container]}
+      behavior="position">
+
       <SafeAreaView style={styles.container}>
-        {/* <Image
+        <Image
           source={{uri: "https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif"}}
           style={{ width: 300, height: 200, marginBottom: 50}}
-        /> */}
+        />
 
-        <View style={styles.inputView}>
+        <View >
           <TextInput
           mode='outlined'
             style={styles.TextInput}
@@ -221,7 +225,7 @@ export default class Signup extends Component {
           />
         </View>
 
-        <View style={styles.inputView}>
+        <View>
           <TextInput
           mode='outlined'
             style={styles.TextInput}
@@ -231,7 +235,7 @@ export default class Signup extends Component {
           />
         </View>
 
-        <View style={styles.inputView}>
+        <View>
           <TextInput
             style={styles.TextInput}
             mode='outlined'
@@ -245,24 +249,26 @@ export default class Signup extends Component {
 
         <TouchableOpacity style={styles.signUpBtn}>
           <Text
-            style={styles.loginText}
+            style={{fontSize: 15, color: 'white'}}
             onPress={() => {
               this.registerUserUsingEmail();
             }}
           >
-            SIGNUP
+            Sign up
           </Text>
         </TouchableOpacity>
-
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, justifyContent: 'center'}}>
+          <Text style={{ fontSize: 13, fontWeight: '200' }}>Already signed up?  </Text>
         <TouchableOpacity style={styles.loginBtn}>
           <Text
-            style={styles.loginText}
+            style={{ fontSize: 14, fontWeight: '300', color: 'blue' }}
             onPress={() => this.props.navigation.navigate("Login")}
           >
-            Already Registered? Click here to login
+            Login
           </Text>
         </TouchableOpacity>
-      </SafeAreaView>
+        </View>
+      </SafeAreaView></KeyboardAvoidingView>
     );
   }
 }
@@ -291,36 +297,24 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
-    //backgroundColor: '#FFC0CB',
-    //borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 5,
     width: 300,
-    height: 50,
     paddingLeft: 5,
     fontWeight: "200",
-    //textAlign: 'left'
   },
 
   signUpBtn: {
-    width: "20%",
-    borderRadius: 25,
-    height: 50,
+    width: "50%",
+    borderRadius: 10,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "rgba(100, 100, 150, 1)",
+    marginVertical: 20,
+    marginTop: 50
   },
 
-  loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#f0f8ff",
-  },
 });
 
 // namespace is not allowed! when typing email
