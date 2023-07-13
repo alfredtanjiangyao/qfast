@@ -9,7 +9,6 @@ import {
   query,
   where,
   getDocs,
-  listCollections,
   doc,
   getDoc,
   setDoc,
@@ -123,19 +122,15 @@ const Booking = () => {
     setBookTime("");
   }, [bookDate, hospital, endTime]);
   async function isSlotAvailable(dt, tm) {
-    // console.log("Date:", dt);
-    // console.log("Time:", tm);
-    //const formattedDate = dt.substring(0, 10);
+    
     const q = query(
       bookingRef,
       where("date", "==", dt),
       where("time", "==", tm)
     );
     const snapshot = await getDocs(q);
-    // console.log(maxSlot);
-    // Check if the number of bookings for the slot is less than 5
     const isAvailable = snapshot.size < maxSlot;
-    // console.log(snapshot.size);
+    console.log(dt, tm)
     return isAvailable;
   }
   useEffect(() => {

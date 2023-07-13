@@ -224,14 +224,14 @@ export default class Signup extends Component {
     return (
       <SafeAreaView style={styles.container}>
         <Image
-          source={require("../../assets/Qfast.png")}
-          style={{ width: 300, height: 300 }}
+          source={{uri: "https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif"}}
+          style={{ width: 100, height: 250,  marginBottom: 50}}
         />
 
         <View style={styles.inputView}>
           <TextInput
             style={styles.TextInput}
-            placeholder="Username"
+            placeholder="Usernamee"
             placeholderTextColor="#003f5c"
             value={this.state.username} //store the value filled by the user to username
             onChangeText={(val) => this.updateInputVal(val, "username")}

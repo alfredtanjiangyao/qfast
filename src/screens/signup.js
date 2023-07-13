@@ -25,7 +25,6 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Text,
   View,
@@ -34,6 +33,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { TextInput } from 'react-native-paper';
 
 export default class Signup extends Component {
   constructor() {
@@ -206,16 +206,16 @@ export default class Signup extends Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <Image
-          source={require("../../assets/Qfast.png")}
-          style={{ width: 300, height: 300 }}
-        />
+        {/* <Image
+          source={{uri: "https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif"}}
+          style={{ width: 300, height: 200, marginBottom: 50}}
+        /> */}
 
         <View style={styles.inputView}>
           <TextInput
+          mode='outlined'
             style={styles.TextInput}
-            placeholder="Username"
-            placeholderTextColor="#003f5c"
+            label="Username"
             value={this.state.username} //store the value filled by the user to username
             onChangeText={(val) => this.updateInputVal(val, "username")}
           />
@@ -223,9 +223,9 @@ export default class Signup extends Component {
 
         <View style={styles.inputView}>
           <TextInput
+          mode='outlined'
             style={styles.TextInput}
-            placeholder="Email"
-            placeholderTextColor="#003f5c"
+            label="Email"
             value={this.state.email}
             onChangeText={(val) => this.updateInputVal(val, "email")}
           />
@@ -234,7 +234,8 @@ export default class Signup extends Component {
         <View style={styles.inputView}>
           <TextInput
             style={styles.TextInput}
-            placeholder="Password"
+            mode='outlined'
+            label="Password"
             placeholderTextColor="#003f5c"
             value={this.state.password}
             onChangeText={(val) => this.updateInputVal(val, "password")}
@@ -269,7 +270,7 @@ export default class Signup extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -290,11 +291,15 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
-    fontWeight: "200",
+    //backgroundColor: '#FFC0CB',
+    //borderWidth: 1,
+    borderColor: 'grey',
+    borderRadius: 5,
+    width: 300,
     height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
+    paddingLeft: 5,
+    fontWeight: "200",
+    //textAlign: 'left'
   },
 
   signUpBtn: {

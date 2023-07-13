@@ -14,6 +14,7 @@ const Home = () => {
     };
     const  viewPress = () => {
         setIsViewPressed(true);
+        navigation.navigate('StaffView');
         setIsViewPressed(false);
     };
 

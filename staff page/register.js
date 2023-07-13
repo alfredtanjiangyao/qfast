@@ -1,13 +1,15 @@
-import { db } from '../src/firebase/config';
-import { collection, addDoc, getDoc, doc, setDoc } from 'firebase/firestore';
-import { useState } from 'react';
+import { db, auth} from '../src/firebase/config';
+import { collection, addDoc, getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TextInput, Button, Dialog } from 'react-native-paper';
+import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 
 // register new hospital 
 const Register = () => {
+    const [userRef, setUserRef] = useState(null);
     const [clinicName, setClinicName] = useState('');
     const [maxSlot, setmaxSlot] = useState('');
     const [show, setShow] = useState(false);
@@ -15,7 +17,18 @@ const Register = () => {
     const [endTime, setEndTime] = useState(new Date().setHours(22, 0, 0, 0));
     const [showStartTimePicker, setShowStartTimePicker] = useState(true);
     const [showEndTimePicker, setShowEndTimePicker] = useState(true);
+    const navigation = useNavigation();
     // const [isFinish, setIsFinish] = useState(false);
+    useEffect(() => {
+        //refer to user doc 
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                setUserRef(doc(collection(db, 'users'), user.uid));
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
 
     const nextSubmit = async () => {
         try {
@@ -49,7 +62,9 @@ const Register = () => {
                 const colRef = collection(db, 'clinics');
                 const docRef = doc(colRef, clinicName);
                 await setDoc(docRef, data);
+                await updateDoc(userRef, {registeredClinic: clinicName});
                 alert('Data saved successfully!');
+                navigation.navigate("Dashboard");
 
             }
             catch (error) {
