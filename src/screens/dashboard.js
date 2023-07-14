@@ -252,48 +252,4 @@ const styles = StyleSheet.create({
     height: 160,
     width: 160
   },
-  inputView: {
-    backgroundColor: "#FFC0CB",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
-    alignItems: "left",
-  },
-  TextInput: {
-    fontWeight: '200',
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
-  },
-  signUpBtn: {
-    width: "20%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-    backgroundColor: "#f0f8ff",
-  },
-  loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#f0f8ff",
-  },
-
-  loginText: {
-    color: "#000000",
-    marginTop: 0,
-    textAlign: 'center'
-  },
-
-  textStyle: {
-    color: '#FFFFFF',
-    textAlign: 'center',
-  }
 });

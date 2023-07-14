@@ -28,9 +28,6 @@ import { TextInput } from 'react-native-paper';
 //   GoogleSignin,
 //   statusCodes,
 // } from "@react-native-google-signin/google-signin";
-import Home from "../../staff page/home";
-import Booking from "../../booking";
-import { QuerySnapshot } from "firebase/firestore";
 import {
   doc,
   getDoc,
@@ -104,13 +101,8 @@ export default class Login extends Component {
   resetPasswordWithEmail = async (user) => {
     try {
       const email = user.email;
-      // const actionCodeSettings = {
-      //   handleCodeInApp: true,
-      //   url: `https://noreply@qfast-77dbc.firebaseapp.com/?email=${email}`, // Replace with your app's verification URL
-      // };
 
       await sendPasswordResetEmail(auth, email);
-      // await sendEmailVerification(user, actionCodeSettings);
 
       Alert.alert("Password reset email sent!");
     } catch (error) {
@@ -299,7 +291,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginLeft: 20,
   },
-
+  line: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   loginBtn: {
     width: "50%",
     borderRadius: 10,
