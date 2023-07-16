@@ -70,6 +70,10 @@ export default class Dashboard extends Component {
       this.props.navigation.navigate('Edit');
     };
 
+    const profilePress = () => {
+      this.props.navigation.navigate('Profile');
+    }
+
     // const profilePress = () => {
     //   this.props.navigation.navigate('Home');
     // };
@@ -148,7 +152,7 @@ export default class Dashboard extends Component {
               iconColor={MD3Colors.error50}
               size={100}
               mode='contained-tonal'
-              onPress={() => console.log('Pressed')}
+              onPress={profilePress}
             />
           </View>
         </View>

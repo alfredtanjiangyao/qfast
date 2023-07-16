@@ -36,6 +36,7 @@ const Booking = () => {
   const [userDoc, setUserDoc] = useState(null); // refer to the user email doc
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
+  const [hospital, setHospital] = useState(""); 
   //const email = userDocRef.email; 
   useEffect(() => {
     //refer user doc

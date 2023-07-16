@@ -36,8 +36,42 @@ const Profile = () => {
   const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [gender, setGender] = useState("");
 
-  //add font 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user){
+        setUserId(user.uid);
+        setEmail(user.email);
+      }
+    }
+  )}, []);
+
+  useEffect(() => {
+    const fetchData = async (email) => {
+      try {
+        const usersCollectionRef = collection(db, "users");
+        const queryUserEmailRef = query(
+          usersCollectionRef,
+          where("email", "==", email)
+        );
+        const querySnapshot = await getDocs(queryUserEmailRef);
+
+        const userData = querySnapshot.docs[0].data();
+        const username = userData.username;
+        setUsername(username);
+        console.log(username);
+
+      } catch (error) {
+        alert(error.message);
+      }
+    };
+
+    fetchData(email);
+  }, [email]);
+
+
+
   const [fontsLoaded] = useFonts({
     'Caprasimo-Regular': require('./assets/font/Caprasimo-Regular.otf'),
   });
@@ -45,36 +79,6 @@ const Profile = () => {
   if (!fontsLoaded) {
     return null;
   }
-
-  //retreive the data of the current user
-  const fetchData = async (email) => {
-    try {
-      const usersCollectionRef = collection(db, "users");
-      const queryUserEmailRef = query(
-        usersCollectionRef,
-        where("email", "==", email)
-      );
-      const querySnapshot = await getDocs(queryUserEmailRef);
-
-      const userData = querySnapshot.docs[0].data();
-      const username = userData.username;
-      setUsername(username);
-      console.log(username);
-
-    } catch (error) {
-      alert(error.message);
-    }
-  };
-
-  useEffect(() => {
-    const user = auth.currentUser;
-    setUserId(user.uid);
-    setEmail(user.email);
-  }, []);
-
-  useEffect(() => {
-    fetchData(email);
-  }, [email]);
 
   return (
     <View style={styles.whole}>
@@ -92,6 +96,8 @@ const Profile = () => {
               style={styles.TextInputForPlaceholder}
               placeholder="Email"
               placeholderTextColor="#003f5c"
+              defaultValue={username}
+              editable={false}
             // value={this.state.email}
             // onChangeText={(val) => this.updateInputVal(val, "email")}
             />
@@ -107,6 +113,7 @@ const Profile = () => {
               style={styles.TextInputForPlaceholder}
               placeholderTextColor="#003f5c"
               defaultValue={email}
+              editable={false}
             // value={this.state.email}
             // onChangeText={(val) => this.updateInputVal(val, "email")}
             />
@@ -122,7 +129,7 @@ const Profile = () => {
               style={styles.TextInputForPlaceholder}
               placeholder="Email"
               placeholderTextColor="#003f5c"
-              defaultValue="example@example.com"
+              defaultValue="Contact"
             // value={this.state.email}
             // onChangeText={(val) => this.updateInputVal(val, "email")}
             />
@@ -138,7 +145,7 @@ const Profile = () => {
               style={styles.TextInputForPlaceholder}
               placeholder="Email"
               placeholderTextColor="#003f5c"
-              defaultValue="example@example.com"
+              defaultValue="Male or Female"
             // value={this.state.email}
             // onChangeText={(val) => this.updateInputVal(val, "email")}
             />
@@ -299,5 +306,3 @@ const styles = StyleSheet.create({
 });
 
 export default Profile;
-
-//11

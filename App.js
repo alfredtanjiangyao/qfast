@@ -29,7 +29,7 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Profile"
+      initialRouteName="Signup"
       screenOptions={{
         headerTitleAlign: "center",
         headerStyle: {
