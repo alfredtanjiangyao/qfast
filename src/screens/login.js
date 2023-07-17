@@ -68,7 +68,7 @@ export default class Login extends Component {
       const { email, password } = this.state;
 
       if (!email || !password) {
-        Alert.alert("Enter details to signin!");
+        Alert.alert("Enter details to login!");
         return;
       }
 
@@ -235,7 +235,7 @@ export default class Login extends Component {
                   this.userLoginWithEmail();
                 }}
               >
-                Login
+                Login 
               </Text>
             </TouchableOpacity>
           </View>

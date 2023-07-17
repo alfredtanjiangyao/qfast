@@ -35,6 +35,7 @@ const Booking = () => {
   const [userDoc, setUserDoc] = useState(null); // refer to the user email doc
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
+  const [hospital, setHospital] = useState('');
   //const email = userDocRef.email; 
   useEffect(() => {
     //refer user doc
@@ -214,7 +215,7 @@ const Booking = () => {
     <View style={styles.whole}>
       <View style={styles.container}>
         <Picker selectedValue={hospital} onValueChange={handlePickerChange}>
-          <Picker.Item label="Select a hospital" value="" />
+          <Picker.Item label="Select a clinic" value="" />
           {collections.map((clinics, index) => (
             <Picker.Item key={index} label={clinics} value={clinics} />
           ))}
@@ -238,10 +239,10 @@ const Booking = () => {
             />
           </View>
         )}
-        <View>
+        <View style = {{marginBottom: 10}}>
           <Text style={styles.text}>Slots Available :</Text>
 
-          <ScrollView style={styles.scrollcontainer} contentContainerStyle={styles.scrollContentContainer}>
+          <ScrollView style={styles.scrollcontainer} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContentContainer}>
             <View style={styles.timeSlotTable}>
               {bookDate &&
                 hospital &&
@@ -290,16 +291,17 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 20,
     //flex :1,
-    //backgroundColor:'blue'
+    //backgroundColor:'white'
   },
   scrollcontainer: {
     //flex: 1,
-    maxHeight: 400,
+    maxHeight: 350,
     backgroundColor: "oldlace",
     borderRadius: 20,
+    //marginBottom: 10,
   },
   scrollContentContainer: {
-    //flex: 1,
+    flexGrow: 1,
     justifyContent: "flex-end",
   },
   text: {

@@ -97,7 +97,6 @@ const StaffView = () => {
                 // Increment the time by 30 minutes
                 currentTime.setMinutes(currentTime.getMinutes() + 30);
             }
-            console.log(slot)
             setSlot(slots);
         }
     }, [endTime, date]);

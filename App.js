@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from './src/screens/login';
 import Signup from './src/screens/signup';
-import Signup from './src/screens/signup';
 import Dashboard from './src/screens/dashboard';
 import 'firebase/auth';
 import { StatusBar } from "expo-status-bar";
@@ -31,8 +30,8 @@ const Stack = createStackNavigator();
 function MyStack() {
   return (
     <Stack.Navigator
-      initialRouteName="Signup"
-      //initialRouteName="StaffView"
+      initialRouteName="Login"
+      //initialRouteName="Home"
       screenOptions={{
         headerTitleAlign: "center",
         headerStyle: {
