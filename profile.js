@@ -1,4 +1,5 @@
 import {
+  Alert,
   View,
   Text,
   Button,
@@ -7,7 +8,8 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useFocusEffect } from '@react-navigation/native';
 import { db, auth } from "./src/firebase/config";
 
 import {
@@ -21,34 +23,35 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
-import CalendarPicker from "react-native-calendar-picker";
-import moment from "moment";
-import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { Picker } from "@react-native-picker/picker";
-import Dashboard from "./src/screens/dashboard";
-import { useFonts } from 'expo-font';
+import { useFonts } from "expo-font";
 import { onAuthStateChanged } from "firebase/auth";
-import { roundToNearestMinutes } from "date-fns";
+import BirthdatePicker from "./BirthdatePicker";
+import "firebase/auth";
 
 const Profile = () => {
   const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
+  const [contact, setContact] = useState("");
+  const [birthdate, setBirthdate] = useState("");
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      if (user){
+      if (user) {
         setUserId(user.uid);
         setEmail(user.email);
       }
-    }
-  )}, []);
+    });
+  }, []);
 
   useEffect(() => {
-    const fetchData = async (email) => {
+    const fetchData = async () => {
       try {
         const usersCollectionRef = collection(db, "users");
         const queryUserEmailRef = query(
@@ -57,23 +60,119 @@ const Profile = () => {
         );
         const querySnapshot = await getDocs(queryUserEmailRef);
 
-        const userData = querySnapshot.docs[0].data();
-        const username = userData.username;
-        setUsername(username);
-        console.log(username);
+        const userData = querySnapshot.docs[0];
+        const user = userData.data();
 
+          const username = user.username;
+          setUsername(username);
+
+          console.log(username);
+
+          const gender = user.gender;
+          setGender(gender);
+
+          console.log(gender);
+
+          const contact = user.contact;
+          setContact(contact);
+
+          console.log(contact);
+
+          const birthdate = user.birthdate;
+          setBirthdate(birthdate);
+
+          console.log(birthdate);
+
+        
+        // const userData = querySnapshot.docs[0].data();
+        // const username = userData.username;
+        // setUsername(username);
+
+        // const gender = userData.gender;
+        // setGender(gender);
+
+        // const contact = userData.contact;
+        // setContact(contact);
+
+        // const birthdate = userData.birthdate;
+        // setBirthdate(birthdate);
+
+        console.log(username);
+        console.log(gender);
       } catch (error) {
-        alert(error.message);
+        console.log(error);
       }
     };
 
     fetchData(email);
-  }, [email]);
+  }, []);
 
+  const checkBirthDate = async () => {
+    const usersCollectionRef = collection(db, "users");
+    const queryUserEmailRef = query(
+      usersCollectionRef,
+      where("email", "==", email)
+    );
+    const querySnapshot = await getDocs(queryUserEmailRef);
 
+    // const userData = querySnapshot.docs[0];
+    // const userBirthdate = userData.get("birthdate");
+    // const userData = querySnapshot.docs[0].data();
+    // const userBirthdate = userData.birthdate;
+
+    if(querySnapshot.empty){
+      return
+    }
+    const userData = querySnapshot.docs[0].data();
+
+    if(userData){
+      const userBirthdate = userData.birthdate;
+      setBirthdate(userBirthdate);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', async () => {
+      await checkBirthDate();
+    });
+  
+    return unsubscribe;
+  }, [navigation]);
+  
+
+  const checkGenderInput = () => {
+    if (gender === "Male" || gender === "Female") {
+    } else {
+      Alert.alert("Please insert your gender properly.");
+      setGender("");
+    }
+  };
+
+  const saveUserData = async () => {
+    try {
+      const usersCollectionRef = collection(db, "users");
+      const queryUserEmailRef = query(
+        usersCollectionRef,
+        where("email", "==", email)
+      );
+      const querySnapshot = await getDocs(queryUserEmailRef);
+
+      const userId = querySnapshot.docs[0].id;
+      const userDocRef = doc(usersCollectionRef, userId);
+
+      await updateDoc(userDocRef, {
+        contact: contact,
+        gender: gender,
+        birthdate: birthdate,
+      });
+    } catch (error) {
+      alert(error.message);
+      console.log("1");
+    }
+  };
 
   const [fontsLoaded] = useFonts({
-    'Caprasimo-Regular': require('./assets/font/Caprasimo-Regular.otf'),
+    "Caprasimo-Regular": require("./assets/font/Caprasimo-Regular.otf"),
   });
 
   if (!fontsLoaded) {
@@ -82,11 +181,6 @@ const Profile = () => {
 
   return (
     <View style={styles.whole}>
-      {/* <View style={styles.container}>
-        <View style={styles.line}>
-          <View style={{ flex: 1, height: 1.5, backgroundColor: "black" }} />
-        </View>
-      </View> */}
 
       <View style={styles.container2}>
         <View style={styles.object}>
@@ -98,8 +192,6 @@ const Profile = () => {
               placeholderTextColor="#003f5c"
               defaultValue={username}
               editable={false}
-            // value={this.state.email}
-            // onChangeText={(val) => this.updateInputVal(val, "email")}
             />
           </View>
         </View>
@@ -114,8 +206,6 @@ const Profile = () => {
               placeholderTextColor="#003f5c"
               defaultValue={email}
               editable={false}
-            // value={this.state.email}
-            // onChangeText={(val) => this.updateInputVal(val, "email")}
             />
           </View>
         </View>
@@ -127,11 +217,15 @@ const Profile = () => {
           <View style={styles.inputView}>
             <TextInput
               style={styles.TextInputForPlaceholder}
-              placeholder="Email"
+              placeholder="Contact"
               placeholderTextColor="#003f5c"
-              defaultValue="Contact"
-            // value={this.state.email}
-            // onChangeText={(val) => this.updateInputVal(val, "email")}
+              defaultValue={contact}
+              value={contact}
+              onChangeText={(val) => {
+                const numericValue = val.replace(/[^0-9]/g, "");
+                const truncatedValue = numericValue.slice(0, 8);
+                setContact(truncatedValue);
+              }}
             />
           </View>
         </View>
@@ -143,11 +237,12 @@ const Profile = () => {
           <View style={styles.inputView}>
             <TextInput
               style={styles.TextInputForPlaceholder}
-              placeholder="Email"
+              placeholder="Male or Female"
               placeholderTextColor="#003f5c"
-              defaultValue="Male or Female"
-            // value={this.state.email}
-            // onChangeText={(val) => this.updateInputVal(val, "email")}
+              defaultValue={gender}
+              value={gender}
+              onChangeText={(val) => setGender(val)}
+              onBlur={checkGenderInput}
             />
           </View>
         </View>
@@ -157,60 +252,48 @@ const Profile = () => {
         <View style={styles.object}>
           <Text style={styles.TextInput}>Birthdate</Text>
           <View style={styles.inputView}>
-            <TextInput
-              style={styles.TextInputForPlaceholder}
-              placeholder="Email"
-              placeholderTextColor="#003f5c"
-              defaultValue="example@example.com"
-            // value={this.state.email}
-            // onChangeText={(val) => this.updateInputVal(val, "email")}
-            />
+            <TouchableOpacity
+              style={styles.inputView}
+              onPress={async () => {
+                navigation.navigate("BirthdatePicker");
+              }}
+            >
+              {birthdate ? (
+                <Text style={styles.TextInputForPlaceholder}>{birthdate}</Text>
+              ) : (
+                <Text style={styles.TextInputForPlaceholder}>
+                  Select Birthdate
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
         </View>
       </View>
+      {/* // placeholder="Email"
+              // placeholderTextColor="#003f5c"
+              // defaultValue="example@example.com"
+            // value={this.state.email}
+            // onChangeText={(val) => this.updateInputVal(val, "email")} */}
 
       <View style={styles.container}>
-        <TouchableOpacity >
-          <Text
-            style={styles.submitText}
-            onPress={() => {
-            }}
-          >
+        <TouchableOpacity>
+          <Text style={styles.submitText} onPress={saveUserData}>
             Submit
           </Text>
         </TouchableOpacity>
-
-        {/* <Button title="Submit" color="black"
-              onPress={() => {
-              }}
-            >
-        </Button> */}
-
       </View>
 
       <View style={styles.container2}>
-        <TouchableOpacity >
-          <Text
-            style={styles.submitText}
-            onPress={() => {
-            }}
-          >
+        <TouchableOpacity>
+          <Text style={styles.submitText} onPress={() => {}}>
             Log Out
           </Text>
         </TouchableOpacity>
-
-        {/* <Button title="Log out" color="black"
-              onPress={() => {
-              }}
-            >
-        </Button> */}
-
       </View>
-
-
     </View>
   );
 };
+
 const windowHeight = Dimensions.get("window").height;
 const styles = StyleSheet.create({
   whole: {
@@ -282,7 +365,7 @@ const styles = StyleSheet.create({
     fontWeight: "200",
     fontSize: 20,
     fontWeight: "bold",
-    fontFamily: 'Caprasimo-Regular',
+    fontFamily: "Caprasimo-Regular",
   },
   button: {
     bottom: 10,
@@ -307,4 +390,4 @@ const styles = StyleSheet.create({
 
 export default Profile;
 
-/1
+//store data in our database after clicking the submit button

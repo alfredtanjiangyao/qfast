@@ -172,6 +172,9 @@ export default class Signup extends Component {
       await setDoc(userDocRef, {
         username: username,
         email: email,
+        contact: "",
+        gender: "",
+        birthdate: "",
         // password: password,
       });
 
