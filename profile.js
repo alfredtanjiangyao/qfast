@@ -8,8 +8,8 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { db, auth } from "./src/firebase/config";
 
 import {
@@ -27,9 +27,17 @@ import {
 } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
 import BirthdatePicker from "./BirthdatePicker";
 import "firebase/auth";
+
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+]);
+
+LogBox.ignoreLogs(['Require cycle:']);
 
 const Profile = () => {
   const [userId, setUserId] = useState("");
@@ -40,105 +48,110 @@ const Profile = () => {
   const [birthdate, setBirthdate] = useState("");
 
   const navigation = useNavigation();
+  
+  const fetchData = async (userEmail) => {
+    try {
+      console.log("fetchdataemail" + userEmail);
+      const usersCollectionRef = collection(db, "users");
+      const queryUserEmailRef = query(
+        usersCollectionRef,
+        where("email", "==", userEmail)
+      );
+      const querySnapshot = await getDocs(queryUserEmailRef);
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        setEmail(user.email);
+      console.log("2");
+
+      if (querySnapshot.empty) {
+        console.log("User Data2:");
+        return; // No documents found, handle the case accordingly
       }
-    });
-  }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const usersCollectionRef = collection(db, "users");
-        const queryUserEmailRef = query(
-          usersCollectionRef,
-          where("email", "==", email)
-        );
-        const querySnapshot = await getDocs(queryUserEmailRef);
+      const userData = querySnapshot.docs[0]?.data();
 
-        const userData = querySnapshot.docs[0];
-        const user = userData.data();
+      console.log("3");
 
-          const username = user.username;
-          setUsername(username);
+      if (userData) {
+        const email = userData.email;
+        setEmail(email);
 
-          console.log(username);
+        const username = userData.username;
+        setUsername(username);
 
-          const gender = user.gender;
-          setGender(gender);
+        const gender = userData.gender;
+        setGender(gender);
 
-          console.log(gender);
+        const contact = userData.contact;
+        setContact(contact);
 
-          const contact = user.contact;
-          setContact(contact);
+        const birthdate = userData.birthdate;
+        setBirthdate(birthdate);
 
-          console.log(contact);
-
-          const birthdate = user.birthdate;
-          setBirthdate(birthdate);
-
-          console.log(birthdate);
-
-        
-        // const userData = querySnapshot.docs[0].data();
-        // const username = userData.username;
-        // setUsername(username);
-
-        // const gender = userData.gender;
-        // setGender(gender);
-
-        // const contact = userData.contact;
-        // setContact(contact);
-
-        // const birthdate = userData.birthdate;
-        // setBirthdate(birthdate);
-
-        console.log(username);
-        console.log(gender);
-      } catch (error) {
-        console.log(error);
+        console.log("4");
       }
-    };
-
-    fetchData(email);
-  }, []);
-
-  const checkBirthDate = async () => {
-    const usersCollectionRef = collection(db, "users");
-    const queryUserEmailRef = query(
-      usersCollectionRef,
-      where("email", "==", email)
-    );
-    const querySnapshot = await getDocs(queryUserEmailRef);
-
-    // const userData = querySnapshot.docs[0];
-    // const userBirthdate = userData.get("birthdate");
-    // const userData = querySnapshot.docs[0].data();
-    // const userBirthdate = userData.birthdate;
-
-    if(querySnapshot.empty){
-      return
-    }
-    const userData = querySnapshot.docs[0].data();
-
-    if(userData){
-      const userBirthdate = userData.birthdate;
-      setBirthdate(userBirthdate);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', async () => {
-      await checkBirthDate();
-    });
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userId = user.uid;
+        const userEmail = user.email;
+        setUserId(userId);
+        setEmail(userEmail);
   
+        console.log("1");
+  
+        fetchData(userEmail);
+      }
+    });
+  }, []);
+
+
+
+  const checkBirthDate = async (userEmail) => {
+
+    console.log("5");
+    const usersCollectionRef = collection(db, "users");
+    const queryUserEmailRef = query(
+      usersCollectionRef,
+      where("email", "==", userEmail)
+    );
+    const querySnapshot = await getDocs(queryUserEmailRef);
+
+    if (querySnapshot.empty) {
+      console.log("wrong");
+      return;
+    }
+    const userData = querySnapshot.docs[0]?.data();
+
+    if (userData) {
+      const userBirthdate = userData.birthdate;
+      setBirthdate(userBirthdate);
+    }
+
+    console.log("6");
+  };
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", async () => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          const userId = user.uid;
+          const userEmail = user.email;
+          setUserId(userId);
+          setEmail(userEmail);
+          
+          checkBirthDate(userEmail);
+        }
+      });
+    });
+
+    console.log("7");
+
     return unsubscribe;
   }, [navigation]);
-  
 
   const checkGenderInput = () => {
     if (gender === "Male" || gender === "Female") {
@@ -150,6 +163,12 @@ const Profile = () => {
 
   const saveUserData = async () => {
     try {
+      console.log("9");
+      if (contact === "" || gender === "" || birthdate=== ""){
+        Alert.alert("Please enter all details","");
+        console.log("9");
+        return;
+      }
       const usersCollectionRef = collection(db, "users");
       const queryUserEmailRef = query(
         usersCollectionRef,
@@ -164,12 +183,32 @@ const Profile = () => {
         contact: contact,
         gender: gender,
         birthdate: birthdate,
+        profileCompleted: true,
       });
+      console.log("8");
+      Alert.alert("Your profile has been completed","");
     } catch (error) {
       alert(error.message);
-      console.log("1");
     }
   };
+
+  const signOut = async() => {
+  //   signOut(auth).then(() => {
+  //     setTimeout(() => {
+  //       navigation.navigate("Login");
+  //     }, 500);
+  //   })
+  //     .catch(error => this.setState({ errorMessage: error.message }))
+  // }
+  try {
+    await signOut(auth);
+    setTimeout(() => {
+      navigation.navigate("Login");
+    }, 500); // Delay the navigation by 500 milliseconds
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const [fontsLoaded] = useFonts({
     "Caprasimo-Regular": require("./assets/font/Caprasimo-Regular.otf"),
@@ -181,7 +220,6 @@ const Profile = () => {
 
   return (
     <View style={styles.whole}>
-
       <View style={styles.container2}>
         <View style={styles.object}>
           <Text style={styles.TextInput}>Username</Text>
@@ -255,7 +293,7 @@ const Profile = () => {
             <TouchableOpacity
               style={styles.inputView}
               onPress={async () => {
-                navigation.navigate("BirthdatePicker");
+                navigation.navigate("BirthdatePicker", { navigation });
               }}
             >
               {birthdate ? (
@@ -285,7 +323,7 @@ const Profile = () => {
 
       <View style={styles.container2}>
         <TouchableOpacity>
-          <Text style={styles.submitText} onPress={() => {}}>
+          <Text style={styles.submitText} onPress={signOut}>
             Log Out
           </Text>
         </TouchableOpacity>
@@ -317,10 +355,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: -10,
     marginHorizontal: 20,
-  },
-  line: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   object: {
     flexDirection: "row",
