@@ -1,13 +1,16 @@
-import { db } from '../src/firebase/config';
-import { collection, addDoc, getDoc, doc, setDoc } from 'firebase/firestore';
-import { useState } from 'react';
+import { db, auth } from '../src/firebase/config';
+import { collection, addDoc, getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TextInput, Button, Dialog } from 'react-native-paper';
+import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 
 // register new hospital 
 const Register = () => {
+    const [userRef, setUserRef] = useState(null);
     const [clinicName, setClinicName] = useState('');
     const [maxSlot, setmaxSlot] = useState('');
     const [show, setShow] = useState(false);
@@ -15,7 +18,45 @@ const Register = () => {
     const [endTime, setEndTime] = useState(new Date().setHours(22, 0, 0, 0));
     const [showStartTimePicker, setShowStartTimePicker] = useState(true);
     const [showEndTimePicker, setShowEndTimePicker] = useState(true);
+    const [registered, setRegistered] = useState(false);
+    const navigation = useNavigation();
     // const [isFinish, setIsFinish] = useState(false);
+    useEffect(() => {
+        //refer to user doc 
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                setUserRef(doc(collection(db, 'users'), user.uid));
+                const userRef = doc(collection(db, 'users'), user.uid);
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    if (userData.hasOwnProperty('registeredClinic')) {
+                        console.log(userData.registeredClinic)
+                        const clinicRef = await getDoc(doc(collection(db, 'clinics'), userData.registeredClinic));
+                        setRegistered(true);
+                        if (clinicRef.exists) {
+                            const clinicData = clinicRef.data();
+                            const startTime = clinicData.startTime.toDate(); // Assuming startTime is a Firestore Timestamp
+                            const formattedStartTime = startTime.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric' });
+                            setStartTime(formattedStartTime);
+                            const endTime = clinicData.endTime.toDate(); // Assuming startTime is a Firestore Timestamp
+                            const formattedEndTime = endTime.toLocaleTimeString([], { hour: 'numeric', minute: 'numeric' });
+                            setEndTime(formattedEndTime);
+                            setmaxSlot(clinicData.maxSlot);
+                            setClinicName(userData.registeredClinic)
+                        }
+                    } else {
+                        console.log("User has not registered any clinic");
+                    }
+                } else {
+                    console.log("User document does not exist");
+                }
+                console.log(registered)
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
 
     const nextSubmit = async () => {
         try {
@@ -49,7 +90,9 @@ const Register = () => {
                 const colRef = collection(db, 'clinics');
                 const docRef = doc(colRef, clinicName);
                 await setDoc(docRef, data);
+                await updateDoc(userRef, { registeredClinic: clinicName });
                 alert('Data saved successfully!');
+                navigation.navigate("Dashboard");
 
             }
             catch (error) {
@@ -71,12 +114,21 @@ const Register = () => {
         }
     };
     return (
-        <View style={{ flex: 1 }}>
-
-            {!show && (<KeyboardAvoidingView style={styles.container} behavior="padding">
+            <View style = {styles.container}>
+                {registered && <View style={{flex: `1`, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ marginBottom: 20, fontStyle:'italic'}}>You have already registered a clinic</Text>
+                    <View style = {{}}>
+                    <Text style={styles.text}> Registered Clinic :      {clinicName}</Text>
+                    <Text style={styles.text}> Start Time :        {startTime}</Text>
+                    <Text style={styles.text}> End Time :          {endTime}</Text>
+                    <Text style={styles.text}> Maximum Occupancy per Slot:   {maxSlot}</Text>
+                    </View>
+                </View>}
+           
+            { !registered && !show && (<KeyboardAvoidingView style={styles.container} behavior="padding">
                 <TextInput
                     style={styles.textInput}
-                    label="Hospital name"
+                    label="Clinic name"
                     value={clinicName}
                     onChangeText={setClinicName}
                 />
@@ -120,8 +172,8 @@ const Register = () => {
                     </Button>
                 </View>)}
             </View>
+             </View>
 
-        </View>
     )
 }
 const styles = StyleSheet.create({
@@ -138,9 +190,14 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         flexGrow: 1,
         //flex: 1,
-       // backgroundColor: 'white',
+        // backgroundColor: 'white',
         marginHorizontal: 30,
         marginVertical: 30
+    },
+    text: {
+        textAlign: 'left',
+        marginTop: 10,
+        fontWeight: 300
     },
     textInput: {
         backgroundColor: 'white',

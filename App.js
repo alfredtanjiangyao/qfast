@@ -22,7 +22,9 @@ import Booking from "./booking";
 import Home from "./staff page/home";
 import Register from "./staff page/register";;
 import Edit from './edit';
+import StaffView from './staff page/view';
 import Profile from './profile';
+import BirthdatePicker from './BirthdatePicker';
 
 const Stack = createStackNavigator();
 
@@ -69,12 +71,20 @@ function MyStack() {
         name="Edit"
         component={Edit} />
       <Stack.Screen
+        name="StaffView"
+        component={StaffView} />
+        <Stack.Screen
         name="Profile"
         component={Profile} />
+      <Stack.Screen
+        name="BirthdatePicker"
+        component={BirthdatePicker} />
     </Stack.Navigator>
   );
 }
 export default function App() {
+
+
   return (
     <NavigationContainer>
       <MyStack />
