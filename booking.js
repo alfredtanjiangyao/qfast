@@ -35,12 +35,8 @@ const Booking = () => {
   const [userDoc, setUserDoc] = useState(null); // refer to the user email doc
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
-<<<<<<< HEAD
-  const [hospital, setHospital] = useState(""); 
   const [hospital, setHospital] = useState('');
-=======
-  const [hospital, setHospital] = useState(""); // refer to the
->>>>>>> 4d3589e (try merge again)
+
   //const email = userDocRef.email; 
   useEffect(() => {
     //refer user doc
