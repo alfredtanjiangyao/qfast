@@ -9,7 +9,6 @@ import {
   query,
   where,
   getDocs,
-  listCollections,
   doc,
   getDoc,
   setDoc,
@@ -36,7 +35,12 @@ const Booking = () => {
   const [userDoc, setUserDoc] = useState(null); // refer to the user email doc
   const [email, setEmail] = useState('');
   const [userName, setUserName] = useState('');
+<<<<<<< HEAD
+  const [hospital, setHospital] = useState(""); 
+  const [hospital, setHospital] = useState('');
+=======
   const [hospital, setHospital] = useState(""); // refer to the
+>>>>>>> 4d3589e (try merge again)
   //const email = userDocRef.email; 
   useEffect(() => {
     //refer user doc
@@ -124,19 +128,15 @@ const Booking = () => {
   }, [bookDate, hospital, endTime]);
 
   async function isSlotAvailable(dt, tm) {
-    // console.log("Date:", dt);
-    // console.log("Time:", tm);
-    //const formattedDate = dt.substring(0, 10);
+    
     const q = query(
       bookingRef,
       where("date", "==", dt),
       where("time", "==", tm)
     );
     const snapshot = await getDocs(q);
-    // console.log(maxSlot);
-    // Check if the number of bookings for the slot is less than 5
     const isAvailable = snapshot.size < maxSlot;
-    // console.log(snapshot.size);
+    console.log(dt, tm)
     return isAvailable;
   }
   
@@ -220,7 +220,7 @@ const Booking = () => {
     <View style={styles.whole}>
       <View style={styles.container}>
         <Picker selectedValue={hospital} onValueChange={handlePickerChange}>
-          <Picker.Item label="Select a hospital" value="" />
+          <Picker.Item label="Select a clinic" value="" />
           {collections.map((clinics, index) => (
             <Picker.Item key={index} label={clinics} value={clinics} />
           ))}
@@ -244,10 +244,10 @@ const Booking = () => {
             />
           </View>
         )}
-        <View>
+        <View style = {{marginBottom: 10}}>
           <Text style={styles.text}>Slots Available :</Text>
 
-          <ScrollView style={styles.scrollcontainer} contentContainerStyle={styles.scrollContentContainer}>
+          <ScrollView style={styles.scrollcontainer} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.scrollContentContainer}>
             <View style={styles.timeSlotTable}>
               {bookDate &&
                 hospital &&
@@ -296,16 +296,17 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     marginHorizontal: 20,
     //flex :1,
-    //backgroundColor:'blue'
+    //backgroundColor:'white'
   },
   scrollcontainer: {
     //flex: 1,
-    maxHeight: 400,
+    maxHeight: 350,
     backgroundColor: "oldlace",
     borderRadius: 20,
+    //marginBottom: 10,
   },
   scrollContentContainer: {
-    //flex: 1,
+    flexGrow: 1,
     justifyContent: "flex-end",
   },
   text: {

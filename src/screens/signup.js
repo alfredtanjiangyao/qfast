@@ -25,7 +25,6 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Text,
   View,
@@ -34,6 +33,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { TextInput } from 'react-native-paper';
 
 export default class Signup extends Component {
   constructor() {
@@ -172,9 +172,14 @@ export default class Signup extends Component {
       await setDoc(userDocRef, {
         username: username,
         email: email,
+<<<<<<< HEAD
+        verified: false
+=======
+        verified: false,
         contact: "",
         gender: "",
         birthdate: "",
+>>>>>>> 4d3589e (try merge again)
         // password: password,
       });
 
@@ -208,36 +213,41 @@ export default class Signup extends Component {
     }
 
     return (
+      <KeyboardAvoidingView
+      style={[{ flex: 1 }, styles.container]}
+      behavior="position">
+
       <SafeAreaView style={styles.container}>
         <Image
-          source={require("../../assets/Qfast.png")}
-          style={{ width: 300, height: 300 }}
+          source={{uri: "https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif"}}
+          style={{ width: 300, height: 200, marginBottom: 50}}
         />
 
-        <View style={styles.inputView}>
+        <View >
           <TextInput
+          mode='outlined'
             style={styles.TextInput}
-            placeholder="Username"
-            placeholderTextColor="#003f5c"
+            label="Username"
             value={this.state.username} //store the value filled by the user to username
             onChangeText={(val) => this.updateInputVal(val, "username")}
           />
         </View>
 
-        <View style={styles.inputView}>
+        <View>
           <TextInput
+          mode='outlined'
             style={styles.TextInput}
-            placeholder="Email"
-            placeholderTextColor="#003f5c"
+            label="Email"
             value={this.state.email}
             onChangeText={(val) => this.updateInputVal(val, "email")}
           />
         </View>
 
-        <View style={styles.inputView}>
+        <View>
           <TextInput
             style={styles.TextInput}
-            placeholder="Password"
+            mode='outlined'
+            label="Password"
             placeholderTextColor="#003f5c"
             value={this.state.password}
             onChangeText={(val) => this.updateInputVal(val, "password")}
@@ -247,24 +257,26 @@ export default class Signup extends Component {
 
         <TouchableOpacity style={styles.signUpBtn}>
           <Text
-            style={styles.loginText}
+            style={{fontSize: 15, color: 'white'}}
             onPress={() => {
               this.registerUserUsingEmail();
             }}
           >
-            SIGNUP
+            Sign up
           </Text>
         </TouchableOpacity>
-
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, justifyContent: 'center'}}>
+          <Text style={{ fontSize: 13, fontWeight: '200' }}>Already signed up?  </Text>
         <TouchableOpacity style={styles.loginBtn}>
           <Text
-            style={styles.loginText}
+            style={{ fontSize: 14, fontWeight: '300', color: 'blue' }}
             onPress={() => this.props.navigation.navigate("Login")}
           >
-            Already Registered? Click here to login
+            Login
           </Text>
         </TouchableOpacity>
-      </SafeAreaView>
+        </View>
+      </SafeAreaView></KeyboardAvoidingView>
     );
   }
 }
@@ -272,7 +284,7 @@ export default class Signup extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -293,32 +305,24 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
+    borderColor: 'grey',
+    borderRadius: 5,
+    width: 300,
+    paddingLeft: 5,
     fontWeight: "200",
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
   },
 
   signUpBtn: {
-    width: "20%",
-    borderRadius: 25,
-    height: 50,
+    width: "50%",
+    borderRadius: 10,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "rgba(100, 100, 150, 1)",
+    marginVertical: 20,
+    marginTop: 50
   },
 
-  loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#f0f8ff",
-  },
 });
 
 // namespace is not allowed! when typing email
