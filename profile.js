@@ -25,33 +25,33 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
+import CalendarPicker from "react-native-calendar-picker";
+import moment from "moment";
+import { ScrollView } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { onAuthStateChanged, updateCurrentUser } from "firebase/auth";
-import BirthdatePicker from "./BirthdatePicker";
-import "firebase/auth";
-
-import { LogBox } from 'react-native';
-
-LogBox.ignoreLogs([
-  'Non-serializable values were found in the navigation state',
-]);
-
-LogBox.ignoreLogs(['Require cycle:']);
+import { Picker } from "@react-native-picker/picker";
+import Dashboard from "./src/screens/dashboard";
+import { useFonts } from 'expo-font';
+import { onAuthStateChanged } from "firebase/auth";
+import { roundToNearestMinutes } from "date-fns";
 
 const Profile = () => {
   const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("");
-  const [contact, setContact] = useState("");
-  const [birthdate, setBirthdate] = useState("");
 
-  const navigation = useNavigation();
-  
-  const fetchData = async (userEmail) => {
+  //add font 
+  const [fontsLoaded] = useFonts({
+    'Caprasimo-Regular': require('./assets/font/Caprasimo-Regular.otf'),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  //retreive the data of the current user
+  const fetchData = async (email) => {
     try {
-      console.log("fetchdataemail" + userEmail);
       const usersCollectionRef = collection(db, "users");
       const queryUserEmailRef = query(
         usersCollectionRef,
@@ -59,125 +59,10 @@ const Profile = () => {
       );
       const querySnapshot = await getDocs(queryUserEmailRef);
 
-      console.log("2");
-
-      if (querySnapshot.empty) {
-        console.log("User Data2:");
-        return; // No documents found, handle the case accordingly
-      }
-
-      const userData = querySnapshot.docs[0]?.data();
-
-      console.log("3");
-
-      if (userData) {
-        const email = userData.email;
-        setEmail(email);
-
-        const username = userData.username;
-        setUsername(username);
-
-        const gender = userData.gender;
-        setGender(gender);
-
-        const contact = userData.contact;
-        setContact(contact);
-
-        const birthdate = userData.birthdate;
-        setBirthdate(birthdate);
-
-        console.log("4");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const userId = user.uid;
-        const userEmail = user.email;
-        setUserId(userId);
-        setEmail(userEmail);
-  
-        console.log("1");
-  
-        fetchData(userEmail);
-      }
-    });
-  }, []);
-
-
-
-  const checkBirthDate = async (userEmail) => {
-
-    console.log("5");
-    const usersCollectionRef = collection(db, "users");
-    const queryUserEmailRef = query(
-      usersCollectionRef,
-      where("email", "==", userEmail)
-    );
-    const querySnapshot = await getDocs(queryUserEmailRef);
-
-    if (querySnapshot.empty) {
-      console.log("wrong");
-      return;
-    }
-    const userData = querySnapshot.docs[0]?.data();
-
-    if (userData) {
-      const userBirthdate = userData.birthdate;
-      setBirthdate(userBirthdate);
-    }
-
-    console.log("6");
-  };
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", async () => {
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          const userId = user.uid;
-          const userEmail = user.email;
-          setUserId(userId);
-          setEmail(userEmail);
-          
-          checkBirthDate(userEmail);
-        }
-      });
-    });
-
-    console.log("7");
-
-    return unsubscribe;
-  }, [navigation]);
-
-  const checkGenderInput = () => {
-    if (gender === "Male" || gender === "Female") {
-    } else {
-      Alert.alert("Please insert your gender properly.");
-      setGender("");
-    }
-  };
-
-  const saveUserData = async () => {
-    try {
-      console.log("9");
-      if (contact === "" || gender === "" || birthdate=== ""){
-        Alert.alert("Please enter all details","");
-        console.log("9");
-        return;
-      }
-      const usersCollectionRef = collection(db, "users");
-      const queryUserEmailRef = query(
-        usersCollectionRef,
-        where("email", "==", email)
-      );
-      const querySnapshot = await getDocs(queryUserEmailRef);
-
-      const userId = querySnapshot.docs[0].id;
-      const userDocRef = doc(usersCollectionRef, userId);
+      const userData = querySnapshot.docs[0].data();
+      const username = userData.username;
+      setUsername(username);
+      console.log(username);
 
       await updateDoc(userDocRef, {
         contact: contact,

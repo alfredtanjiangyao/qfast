@@ -172,10 +172,20 @@ export default class Signup extends Component {
       await setDoc(userDocRef, {
         username: username,
         email: email,
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        verified: false
+=======
+>>>>>>> 388794e98eddba5e2b9fed06c0d7ba939f57b678
         verified: false,
         contact: "",
         gender: "",
         birthdate: "",
+<<<<<<< HEAD
+=======
+>>>>>>> 4d3589e (try merge again)
+>>>>>>> 388794e98eddba5e2b9fed06c0d7ba939f57b678
         // password: password,
       });
 

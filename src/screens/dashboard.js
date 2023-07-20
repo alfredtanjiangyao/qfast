@@ -153,6 +153,10 @@ export default class Dashboard extends Component {
               size={100}
               mode='contained-tonal'
               onPress={profilePress}
+<<<<<<< HEAD
+=======
+              onPress={profilePress}
+>>>>>>> 388794e98eddba5e2b9fed06c0d7ba939f57b678
             />
           </View>
         </View>
