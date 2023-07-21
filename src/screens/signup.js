@@ -8,7 +8,7 @@ import {
   fetchSignInMethodsForEmail,
   sendEmailVerification,
   handleCodeInApp,
-  onAuthStateChanged
+  onAuthStateChanged,
 } from "firebase/auth";
 import { auth, googleProvider, db } from "../firebase/config";
 import {
@@ -35,6 +35,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { TextInput } from "react-native-paper";
+import { registerTaskAsync, BackgroundFetchResult, BackgroundFetch } from 'expo-background-fetch';
+
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs([
+  'FirebaseError: Firebase: Error (auth/network-request-failed).',
+]);
 
 export default class Signup extends Component {
   constructor() {
@@ -168,8 +175,8 @@ export default class Signup extends Component {
 
   //     while (!user.emailVerified) {
   //       if (count === 1) {
-          // await new Promise(resolve => setTimeout(resolve, 5000));
-          // Alert.alert("Email not verified", "Please verify your email.");
+  // await new Promise(resolve => setTimeout(resolve, 5000));
+  // Alert.alert("Email not verified", "Please verify your email.");
   //       }
   //       await user.reload();
   //       count++;
@@ -309,12 +316,12 @@ export default class Signup extends Component {
   registerUserUsingEmail = async () => {
     try {
       const { username, email, password } = this.state;
-  
+
       if (!username || !email || !password) {
         Alert.alert("Missing Information", "Please fill in all the fields.");
         return;
       }
-  
+
       if (password.length < 8) {
         Alert.alert(
           "Invalid Password",
@@ -322,75 +329,75 @@ export default class Signup extends Component {
         );
         return;
       }
-  
+
       // Check username availability
       const isUsernameAvailable = await this.checkUsernameAvailability();
       if (!isUsernameAvailable) {
         Alert.alert("Username taken", "Please choose a different username.");
         return;
       }
-  
+
       // Check email availability
       const isEmailAvailable = await this.checkEmailAvailability();
       if (!isEmailAvailable) {
         Alert.alert("This email has been registered", "");
         return;
       }
-  
+
       // Proceed with user registration
       this.setState({ loading: true });
-  
+
       // Save user data and send email verification
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const usersCollectionRef = collection(db, "users");
       const userDocRef = doc(usersCollectionRef, res.user.uid);
-  
+
       const user = auth.currentUser;
-  
+
       console.log("okay1");
-  
+
       // Send email verification
       await this.verificationEmail(user);
-  
+
       console.log("okay2");
-  
+
       // Wait for email verification
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user && user.emailVerified) {
-          // Continue with the registration process
-          setDoc(userDocRef, {
-            username: username,
-            email: email,
-            verified: true,
-            contact: "",
-            gender: "",
-            birthdate: "",
-          })
-            .then(() => {
-              Alert.alert("User registered successfully!", "");
-              this.setState({
-                username: "",
-                email: "",
-                password: "",
-                loading: false,
-              });
-              this.props.navigation.navigate("Dashboard");
-            })
-            .catch((error) => {
-              Alert.alert("Error registering user:", error.message);
-              console.log(error.message);
-              this.setState({ loading: false });
-            });
-          unsubscribe(); // Unsubscribe the listener once email is verified
-        } else {
-          console.log("waiting for email verification...");
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        var count = 1;
+
+        while (!user.emailVerified) {
+          console.log(user.emailVerified);
+          if (count === 1) {
+            await new Promise((resolve) => setTimeout(resolve, 5000));
+            Alert.alert("Email not verified", "Please verify your email.");
+          }
+          await user.reload();
+          count++;
         }
+
+        await setDoc(userDocRef, {
+          username: username,
+          email: email,
+          verified: false,
+          contact: "",
+          gender: "",
+          birthdate: "",
+          // password: password,
+        });
+
+        Alert.alert("User registered successfully!", "");
+
+        this.setState({
+          username: "",
+          email: "",
+          password: "",
+          loading: false,
+        });
+
+        this.props.navigation.navigate("Dashboard");
       });
-  
-      setTimeout(() => {
-        unsubscribe(); // Unsubscribe the listener after 60 seconds
-        Alert.alert("Email verification timed out.", "Please try again.");
-      }, 60000);
+
+      unsubscribe();
     } catch (error) {
       Alert.alert("Error registering user:", error.message);
       console.log(error.message);
