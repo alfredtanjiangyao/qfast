@@ -425,3 +425,5 @@ const styles = StyleSheet.create({
 export default Profile;
 
 //store data in our database after clicking the submit button
+
+//11

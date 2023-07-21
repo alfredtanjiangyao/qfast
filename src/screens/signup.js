@@ -8,6 +8,7 @@ import {
   fetchSignInMethodsForEmail,
   sendEmailVerification,
   handleCodeInApp,
+  onAuthStateChanged
 } from "firebase/auth";
 import { auth, googleProvider, db } from "../firebase/config";
 import {
@@ -33,7 +34,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { TextInput } from 'react-native-paper';
+import { TextInput } from "react-native-paper";
 
 export default class Signup extends Component {
   constructor() {
@@ -54,7 +55,7 @@ export default class Signup extends Component {
     userState[prop] = val;
     this.setState(userState);
   };
-  
+
   //check the availibility of username
   checkUsernameAvailability = async () => {
     try {
@@ -112,18 +113,208 @@ export default class Signup extends Component {
       Alert.alert("Email Verification sent! Check your mailbox", "");
     } catch (error) {
       Alert.alert(error.message);
+      console.log(error.message);
     }
   };
+
+  // registerUserUsingEmail = async () => {
+  //   try {
+  //     const { username, email, password } = this.state;
+
+  //     if (!username || !email || !password) {
+  //       Alert.alert("Missing Information", "Please fill in all the fields.");
+  //       return;
+  //     }
+
+  //     if (password.length < 8) {
+  //       Alert.alert(
+  //         "Invalid Password",
+  //         "Password should be at least 8 characters long."
+  //       );
+  //       return;
+  //     }
+
+  //     // Check username availability
+  //     const isUsernameAvailable = await this.checkUsernameAvailability();
+  //     if (!isUsernameAvailable) {
+  //       Alert.alert("Username taken", "Please choose a different username.");
+  //       return;
+  //     }
+
+  //     // Check email availability
+  //     const isEmailAvailable = await this.checkEmailAvailability();
+  //     if (!isEmailAvailable) {
+  //       Alert.alert("This email has been registered", "");
+  //       return;
+  //     }
+
+  //     // Proceed with user registration
+  //     this.setState({ loading: true });
+
+  //     //save as same document but different field
+  //     const res = await createUserWithEmailAndPassword(auth, email, password);
+  //     const usersCollectionRef = collection(db, "users");
+  //     const userDocRef = doc(usersCollectionRef, res.user.uid);
+
+  //     const user = auth.currentUser;
+
+  //     console.log("okay1");
+
+  //     await this.verificationEmail(user);
+
+  //     console.log("okay2");
+
+  //     var count = 1;
+
+  //     while (!user.emailVerified) {
+  //       if (count === 1) {
+          // await new Promise(resolve => setTimeout(resolve, 5000));
+          // Alert.alert("Email not verified", "Please verify your email.");
+  //       }
+  //       await user.reload();
+  //       count++;
+  //     }
+
+  //     await setDoc(userDocRef, {
+  //       username: username,
+  //       email: email,
+  //       verified: false,
+  //       contact: "",
+  //       gender: "",
+  //       birthdate: "",
+  //       // password: password,
+  //     });
+
+  //     Alert.alert("User registered successfully!", "");
+
+  //     this.setState({
+  //       username: "",
+  //       email: "",
+  //       password: "",
+  //       loading: false,
+  //     });
+
+  //     this.props.navigation.navigate("Dashboard");
+  //   } catch (error) {
+  //     Alert.alert("Error registering user:", error.message);
+  //     console.log(error.message);
+  //     this.setState({ loading: false });
+  //     return;
+  //   }
+  // };
+
+  // registerUserUsingEmail = async () => {
+  //   try {
+  //     const { username, email, password } = this.state;
+
+  //     if (!username || !email || !password) {
+  //       Alert.alert("Missing Information", "Please fill in all the fields.");
+  //       return;
+  //     }
+
+  //     if (password.length < 8) {
+  //       Alert.alert(
+  //         "Invalid Password",
+  //         "Password should be at least 8 characters long."
+  //       );
+  //       return;
+  //     }
+
+  //     // Check username availability
+  //     const isUsernameAvailable = await this.checkUsernameAvailability();
+  //     if (!isUsernameAvailable) {
+  //       Alert.alert("Username taken", "Please choose a different username.");
+  //       return;
+  //     }
+
+  //     // Check email availability
+  //     const isEmailAvailable = await this.checkEmailAvailability();
+  //     if (!isEmailAvailable) {
+  //       Alert.alert("This email has been registered", "");
+  //       return;
+  //     }
+
+  //     // Proceed with user registration
+  //     this.setState({ loading: true });
+
+  //     // Save user data and send email verification
+  //     const res = await createUserWithEmailAndPassword(auth, email, password);
+  //     const usersCollectionRef = collection(db, "users");
+  //     const userDocRef = doc(usersCollectionRef, res.user.uid);
+
+  //     const user = auth.currentUser;
+
+  //     console.log("okay1");
+
+  //     // Send email verification
+  //     await this.verificationEmail(user);
+
+  //     console.log("okay2");
+
+  //     // Wait for email verification
+  //     const isEmailVerified = await new Promise(async (resolve, reject) => {
+  //       const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //         if (user && user.emailVerified) {
+  //           resolve(true);
+  //           unsubscribe(); // Unsubscribe the listener once email is verified
+  //         } else {
+  //           console.log("waiting for email verification...");
+  //         }
+  //       });
+
+  //       // setTimeout(() => {
+  //       //   unsubscribe();
+  //       //   reject(new Error("Email verification timed out."));
+  //       // }, 60000);
+
+  //       await new Promise(resolve => setTimeout(resolve, 5000));
+  //       Alert.alert("Email not verified", "Please verify your email.");
+
+  //     });
+
+  //     console.log("1");
+
+  //     while (!isEmailVerified) {
+  //       await user.reload();
+  //     }
+
+  //     // Continue with the registration process
+  //     await setDoc(userDocRef, {
+  //       username: username,
+  //       email: email,
+  //       verified: true,
+  //       contact: "",
+  //       gender: "",
+  //       birthdate: "",
+  //     });
+
+  //     Alert.alert("User registered successfully!", "");
+
+  //     this.setState({
+  //       username: "",
+  //       email: "",
+  //       password: "",
+  //       loading: false,
+  //     });
+
+  //     this.props.navigation.navigate("Dashboard");
+  //   } catch (error) {
+  //     Alert.alert("Error registering user:", error.message);
+  //     console.log(error.message);
+  //     this.setState({ loading: false });
+  //     return;
+  //   }
+  // };
 
   registerUserUsingEmail = async () => {
     try {
       const { username, email, password } = this.state;
-
+  
       if (!username || !email || !password) {
         Alert.alert("Missing Information", "Please fill in all the fields.");
         return;
       }
-
+  
       if (password.length < 8) {
         Alert.alert(
           "Invalid Password",
@@ -131,66 +322,78 @@ export default class Signup extends Component {
         );
         return;
       }
-
+  
       // Check username availability
       const isUsernameAvailable = await this.checkUsernameAvailability();
       if (!isUsernameAvailable) {
         Alert.alert("Username taken", "Please choose a different username.");
         return;
       }
-
+  
       // Check email availability
       const isEmailAvailable = await this.checkEmailAvailability();
       if (!isEmailAvailable) {
         Alert.alert("This email has been registered", "");
         return;
       }
-
+  
       // Proceed with user registration
       this.setState({ loading: true });
-
-      //save as same document but different field
+  
+      // Save user data and send email verification
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const usersCollectionRef = collection(db, "users");
       const userDocRef = doc(usersCollectionRef, res.user.uid);
-
+  
       const user = auth.currentUser;
-
+  
+      console.log("okay1");
+  
+      // Send email verification
       await this.verificationEmail(user);
-
-      var count = 1;
-
-      while (!user.emailVerified) {
-        if (count === 1) {
-          await new Promise(resolve => setTimeout(resolve, 5000));
-          Alert.alert("Email not verified", "Please verify your email.");
+  
+      console.log("okay2");
+  
+      // Wait for email verification
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user && user.emailVerified) {
+          // Continue with the registration process
+          setDoc(userDocRef, {
+            username: username,
+            email: email,
+            verified: true,
+            contact: "",
+            gender: "",
+            birthdate: "",
+          })
+            .then(() => {
+              Alert.alert("User registered successfully!", "");
+              this.setState({
+                username: "",
+                email: "",
+                password: "",
+                loading: false,
+              });
+              this.props.navigation.navigate("Dashboard");
+            })
+            .catch((error) => {
+              Alert.alert("Error registering user:", error.message);
+              console.log(error.message);
+              this.setState({ loading: false });
+            });
+          unsubscribe(); // Unsubscribe the listener once email is verified
+        } else {
+          console.log("waiting for email verification...");
         }
-        await user.reload();
-        count++;
-      }
-
-      await setDoc(userDocRef, {
-        username: username,
-        email: email,
-        verified: false,
-        contact: "",
-        gender: "",
-        birthdate: "",
-        // password: password,
       });
-
-      Alert.alert("User registered successfully!", "");
-
-      this.setState({
-        username: "",
-        email: "",
-        password: "",
-        loading: false,
-      });
-
-      this.props.navigation.navigate("Dashboard");
+  
+      setTimeout(() => {
+        unsubscribe(); // Unsubscribe the listener after 60 seconds
+        Alert.alert("Email verification timed out.", "Please try again.");
+      }, 60000);
     } catch (error) {
       Alert.alert("Error registering user:", error.message);
+      console.log(error.message);
       this.setState({ loading: false });
       return;
     }
@@ -210,69 +413,81 @@ export default class Signup extends Component {
 
     return (
       <KeyboardAvoidingView
-      style={[{ flex: 1 }, styles.container]}
-      behavior="position">
-
-      <SafeAreaView style={styles.container}>
-        <Image
-          source={{uri: "https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif"}}
-          style={{ width: 300, height: 200, marginBottom: 50}}
-        />
-
-        <View >
-          <TextInput
-          mode='outlined'
-            style={styles.TextInput}
-            label="Username"
-            value={this.state.username} //store the value filled by the user to username
-            onChangeText={(val) => this.updateInputVal(val, "username")}
+        style={[{ flex: 1 }, styles.container]}
+        behavior="position"
+      >
+        <SafeAreaView style={styles.container}>
+          <Image
+            source={{
+              uri: "https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif",
+            }}
+            style={{ width: 300, height: 200, marginBottom: 50 }}
           />
-        </View>
 
-        <View>
-          <TextInput
-          mode='outlined'
-            style={styles.TextInput}
-            label="Email"
-            value={this.state.email}
-            onChangeText={(val) => this.updateInputVal(val, "email")}
-          />
-        </View>
+          <View>
+            <TextInput
+              mode="outlined"
+              style={styles.TextInput}
+              label="Username"
+              value={this.state.username} //store the value filled by the user to username
+              onChangeText={(val) => this.updateInputVal(val, "username")}
+            />
+          </View>
 
-        <View>
-          <TextInput
-            style={styles.TextInput}
-            mode='outlined'
-            label="Password"
-            placeholderTextColor="#003f5c"
-            value={this.state.password}
-            onChangeText={(val) => this.updateInputVal(val, "password")}
-            maxLength={16}
-          />
-        </View>
+          <View>
+            <TextInput
+              mode="outlined"
+              style={styles.TextInput}
+              label="Email"
+              value={this.state.email}
+              onChangeText={(val) => this.updateInputVal(val, "email")}
+            />
+          </View>
 
-        <TouchableOpacity style={styles.signUpBtn}>
-          <Text
-            style={{fontSize: 15, color: 'white'}}
-            onPress={() => {
-              this.registerUserUsingEmail();
+          <View>
+            <TextInput
+              style={styles.TextInput}
+              mode="outlined"
+              label="Password"
+              placeholderTextColor="#003f5c"
+              value={this.state.password}
+              onChangeText={(val) => this.updateInputVal(val, "password")}
+              maxLength={16}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.signUpBtn}>
+            <Text
+              style={{ fontSize: 15, color: "white" }}
+              onPress={() => {
+                this.registerUserUsingEmail();
+              }}
+            >
+              Sign up
+            </Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 10,
+              justifyContent: "center",
             }}
           >
-            Sign up
-          </Text>
-        </TouchableOpacity>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, justifyContent: 'center'}}>
-          <Text style={{ fontSize: 13, fontWeight: '200' }}>Already signed up?  </Text>
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text
-            style={{ fontSize: 14, fontWeight: '300', color: 'blue' }}
-            onPress={() => this.props.navigation.navigate("Login")}
-          >
-            Login
-          </Text>
-        </TouchableOpacity>
-        </View>
-      </SafeAreaView></KeyboardAvoidingView>
+            <Text style={{ fontSize: 13, fontWeight: "200" }}>
+              Already signed up?{" "}
+            </Text>
+            <TouchableOpacity style={styles.loginBtn}>
+              <Text
+                style={{ fontSize: 14, fontWeight: "300", color: "blue" }}
+                onPress={() => this.props.navigation.navigate("Login")}
+              >
+                Login
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 }
@@ -301,7 +516,7 @@ const styles = StyleSheet.create({
   },
 
   TextInput: {
-    borderColor: 'grey',
+    borderColor: "grey",
     borderRadius: 5,
     width: 300,
     paddingLeft: 5,
@@ -316,9 +531,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(100, 100, 150, 1)",
     marginVertical: 20,
-    marginTop: 50
+    marginTop: 50,
   },
-
 });
 
 // namespace is not allowed! when typing email
