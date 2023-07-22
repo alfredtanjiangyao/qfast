@@ -16,7 +16,12 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "qfast"
+      "bundleIdentifier": "qfast",
+      "infoPlist": {
+        "UIBackgroundModes": [
+    "location",
+    "fetch"
+  ] }
     },
     "android": {
       "adaptiveIcon": {

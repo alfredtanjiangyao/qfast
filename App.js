@@ -26,7 +26,39 @@ import StaffView from './staff page/view';
 import Profile from './profile';
 import BirthdatePicker from './BirthdatePicker';
 
+import * as BackgroundFetch from 'expo-background-fetch';
+// import { registerTaskAsync, BackgroundFetchResult } from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
+
+const BACKGROUND_FETCH_TASK = 'background-fetch';
+
 const Stack = createStackNavigator();
+
+// BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+//   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
+// });
+
+const backgroundTask = async (taskData) => {
+  try {
+    const user = auth.currentUser;
+    if (user && !user.emailVerified) {
+      // Perform the email verification check here
+      await user.reload();
+      if (user.emailVerified) {
+        // Email is verified, update the UI or take necessary actions
+        console.log('Email is verified.');
+      }
+    }
+
+    return BackgroundFetchResult.NewData;
+  } catch (error) {
+    console.error('Background task error:', error);
+    return BackgroundFetchResult.Failed;
+  }
+};
+
+// Register the background task using TaskManager.defineTask
+TaskManager.defineTask(BACKGROUND_FETCH_TASK, async (taskData) => backgroundTask(taskData));
 
 function MyStack() {
   return (

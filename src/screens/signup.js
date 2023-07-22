@@ -37,11 +37,16 @@ import {
 import { TextInput } from "react-native-paper";
 import { registerTaskAsync, BackgroundFetchResult, BackgroundFetch } from 'expo-background-fetch';
 
+// import { registerTaskAsync, TaskManager } from 'expo-task-manager';
+// import { BACKGROUND_FETCH_TASK } from './../../background'; 
 import { LogBox } from "react-native";
 
 LogBox.ignoreLogs([
   'FirebaseError: Firebase: Error (auth/network-request-failed).',
 ]);
+
+
+const BACKGROUND_FETCH_TASK = 'background-fetch';
 
 export default class Signup extends Component {
   constructor() {
@@ -56,12 +61,15 @@ export default class Signup extends Component {
       loading: false,
     };
   }
+  
+
 
   updateInputVal = (val, prop) => {
     const userState = this.state;
     userState[prop] = val;
     this.setState(userState);
   };
+
 
   //check the availibility of username
   checkUsernameAvailability = async () => {
@@ -356,6 +364,10 @@ export default class Signup extends Component {
 
       console.log("okay1");
 
+      // await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+      //   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
+      // });
+
       // Send email verification
       await this.verificationEmail(user);
 
@@ -374,6 +386,8 @@ export default class Signup extends Component {
           await user.reload();
           count++;
         }
+
+        // await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
 
         await setDoc(userDocRef, {
           username: username,
