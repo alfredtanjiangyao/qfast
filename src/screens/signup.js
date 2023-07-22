@@ -35,7 +35,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { TextInput } from "react-native-paper";
-import { registerTaskAsync, BackgroundFetchResult, BackgroundFetch } from 'expo-background-fetch';
+import * as BackgroundFetch from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
+// import { registerTaskAsync, BackgroundFetchResult, BackgroundFetch } from 'expo-background-fetch';
 
 // import { registerTaskAsync, TaskManager } from 'expo-task-manager';
 // import { BACKGROUND_FETCH_TASK } from './../../background'; 
@@ -364,9 +366,9 @@ export default class Signup extends Component {
 
       console.log("okay1");
 
-      // await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-      //   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
-      // });
+      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+        minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
+      });
 
       // Send email verification
       await this.verificationEmail(user);
