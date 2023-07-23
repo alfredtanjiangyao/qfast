@@ -18,7 +18,7 @@ import {
   View,
   Image,
 } from "react-native";
-import Booking from "./booking";
+import Booking from "./src/screens/user page/booking";
 import Home from "./src/screens/staff page/home";
 import Register from "./src/screens/staff page/register";
 import Edit from "./src/screens/user page/edit";
