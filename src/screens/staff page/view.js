@@ -1,4 +1,4 @@
-import { db, auth } from "../src/firebase/config";
+import { db, auth } from "../../firebase/config";
 import { useEffect, useState } from "react";
 import { getDocs, doc, collection, getDoc, deleteDoc, query, where } from "firebase/firestore";
 import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';

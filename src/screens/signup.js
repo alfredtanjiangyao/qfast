@@ -1,16 +1,11 @@
 // components/signup.js
 import React, { Component, useState } from "react";
-import firebase from "../firebase/config";
 import {
   createUserWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  fetchSignInMethodsForEmail,
   sendEmailVerification,
-  handleCodeInApp,
   onAuthStateChanged,
 } from "firebase/auth";
-import { auth, googleProvider, db } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 import {
   doc,
   getDoc,
@@ -20,8 +15,6 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
-
-import { StatusBar } from "expo-status-bar";
 import {
   KeyboardAvoidingView,
   SafeAreaView,
@@ -30,47 +23,15 @@ import {
   Text,
   View,
   Image,
-  Button,
   Alert,
   ActivityIndicator,
 } from "react-native";
 import { TextInput } from "react-native-paper";
-import * as BackgroundFetch from 'expo-background-fetch';
-import * as TaskManager from 'expo-task-manager';
-import { registerTaskAsync, BackgroundFetchResult} from 'expo-background-fetch';
-
-// import { registerTaskAsync, TaskManager } from 'expo-task-manager';
-// import { BACKGROUND_FETCH_TASK } from './../../background'; 
 import { LogBox } from "react-native";
 
-LogBox.ignoreLogs([
-  'FirebaseError: Firebase: Error (auth/network-request-failed).',
-]);
-
-
-const BACKGROUND_FETCH_TASK = 'background-fetch';
-
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-  try {
-    var count = 1;
-    const user = auth.currentUser;
-
-    while (user && !user.emailVerified) {
-      console.log(user.emailVerified);
-      if (count === 1) {
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-        Alert.alert("Email not verified", "Please verify your email.");
-      }
-      await user.reload();
-      count++;
-    }
-
-    return BackgroundFetchResult.NewData;
-  } catch (error) {
-    console.error('Background task error:', error);
-    return BackgroundFetchResult.Failed;
-  }
-});
+// LogBox.ignoreLogs([
+//   'FirebaseError: Firebase: Error (auth/network-request-failed).',
+// ]);
 
 export default class Signup extends Component {
   constructor() {
@@ -85,15 +46,12 @@ export default class Signup extends Component {
       loading: false,
     };
   }
-  
-
 
   updateInputVal = (val, prop) => {
     const userState = this.state;
     userState[prop] = val;
     this.setState(userState);
   };
-
 
   //check the availibility of username
   checkUsernameAvailability = async () => {
@@ -149,201 +107,15 @@ export default class Signup extends Component {
 
       await sendEmailVerification(user, actionCodeSettings);
 
-      Alert.alert("Email Verification sent!", "Please use a secondary device to verify your account!.");
+      Alert.alert(
+        "Email Verification sent!",
+        "Please use a secondary device to verify your account!."
+      );
     } catch (error) {
       Alert.alert(error.message);
       console.log(error.message);
     }
   };
-
-  // registerUserUsingEmail = async () => {
-  //   try {
-  //     const { username, email, password } = this.state;
-
-  //     if (!username || !email || !password) {
-  //       Alert.alert("Missing Information", "Please fill in all the fields.");
-  //       return;
-  //     }
-
-  //     if (password.length < 8) {
-  //       Alert.alert(
-  //         "Invalid Password",
-  //         "Password should be at least 8 characters long."
-  //       );
-  //       return;
-  //     }
-
-  //     // Check username availability
-  //     const isUsernameAvailable = await this.checkUsernameAvailability();
-  //     if (!isUsernameAvailable) {
-  //       Alert.alert("Username taken", "Please choose a different username.");
-  //       return;
-  //     }
-
-  //     // Check email availability
-  //     const isEmailAvailable = await this.checkEmailAvailability();
-  //     if (!isEmailAvailable) {
-  //       Alert.alert("This email has been registered", "");
-  //       return;
-  //     }
-
-  //     // Proceed with user registration
-  //     this.setState({ loading: true });
-
-  //     //save as same document but different field
-  //     const res = await createUserWithEmailAndPassword(auth, email, password);
-  //     const usersCollectionRef = collection(db, "users");
-  //     const userDocRef = doc(usersCollectionRef, res.user.uid);
-
-  //     const user = auth.currentUser;
-
-  //     console.log("okay1");
-
-  //     await this.verificationEmail(user);
-
-  //     console.log("okay2");
-
-  //     var count = 1;
-
-  //     while (!user.emailVerified) {
-  //       if (count === 1) {
-  // await new Promise(resolve => setTimeout(resolve, 5000));
-  // Alert.alert("Email not verified", "Please verify your email.");
-  //       }
-  //       await user.reload();
-  //       count++;
-  //     }
-
-  //     await setDoc(userDocRef, {
-  //       username: username,
-  //       email: email,
-  //       verified: false,
-  //       contact: "",
-  //       gender: "",
-  //       birthdate: "",
-  //       // password: password,
-  //     });
-
-  //     Alert.alert("User registered successfully!", "");
-
-  //     this.setState({
-  //       username: "",
-  //       email: "",
-  //       password: "",
-  //       loading: false,
-  //     });
-
-  //     this.props.navigation.navigate("Dashboard");
-  //   } catch (error) {
-  //     Alert.alert("Error registering user:", error.message);
-  //     console.log(error.message);
-  //     this.setState({ loading: false });
-  //     return;
-  //   }
-  // };
-
-  // registerUserUsingEmail = async () => {
-  //   try {
-  //     const { username, email, password } = this.state;
-
-  //     if (!username || !email || !password) {
-  //       Alert.alert("Missing Information", "Please fill in all the fields.");
-  //       return;
-  //     }
-
-  //     if (password.length < 8) {
-  //       Alert.alert(
-  //         "Invalid Password",
-  //         "Password should be at least 8 characters long."
-  //       );
-  //       return;
-  //     }
-
-  //     // Check username availability
-  //     const isUsernameAvailable = await this.checkUsernameAvailability();
-  //     if (!isUsernameAvailable) {
-  //       Alert.alert("Username taken", "Please choose a different username.");
-  //       return;
-  //     }
-
-  //     // Check email availability
-  //     const isEmailAvailable = await this.checkEmailAvailability();
-  //     if (!isEmailAvailable) {
-  //       Alert.alert("This email has been registered", "");
-  //       return;
-  //     }
-
-  //     // Proceed with user registration
-  //     this.setState({ loading: true });
-
-  //     // Save user data and send email verification
-  //     const res = await createUserWithEmailAndPassword(auth, email, password);
-  //     const usersCollectionRef = collection(db, "users");
-  //     const userDocRef = doc(usersCollectionRef, res.user.uid);
-
-  //     const user = auth.currentUser;
-
-  //     console.log("okay1");
-
-  //     // Send email verification
-  //     await this.verificationEmail(user);
-
-  //     console.log("okay2");
-
-  //     // Wait for email verification
-  //     const isEmailVerified = await new Promise(async (resolve, reject) => {
-  //       const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //         if (user && user.emailVerified) {
-  //           resolve(true);
-  //           unsubscribe(); // Unsubscribe the listener once email is verified
-  //         } else {
-  //           console.log("waiting for email verification...");
-  //         }
-  //       });
-
-  //       // setTimeout(() => {
-  //       //   unsubscribe();
-  //       //   reject(new Error("Email verification timed out."));
-  //       // }, 60000);
-
-  //       await new Promise(resolve => setTimeout(resolve, 5000));
-  //       Alert.alert("Email not verified", "Please verify your email.");
-
-  //     });
-
-  //     console.log("1");
-
-  //     while (!isEmailVerified) {
-  //       await user.reload();
-  //     }
-
-  //     // Continue with the registration process
-  //     await setDoc(userDocRef, {
-  //       username: username,
-  //       email: email,
-  //       verified: true,
-  //       contact: "",
-  //       gender: "",
-  //       birthdate: "",
-  //     });
-
-  //     Alert.alert("User registered successfully!", "");
-
-  //     this.setState({
-  //       username: "",
-  //       email: "",
-  //       password: "",
-  //       loading: false,
-  //     });
-
-  //     this.props.navigation.navigate("Dashboard");
-  //   } catch (error) {
-  //     Alert.alert("Error registering user:", error.message);
-  //     console.log(error.message);
-  //     this.setState({ loading: false });
-  //     return;
-  //   }
-  // };
 
   registerUserUsingEmail = async () => {
     try {
@@ -394,49 +166,38 @@ export default class Signup extends Component {
       console.log("okay2");
 
       // Wait for email verification
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      var count = 1;
 
-        // await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-        //   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
-        // });
-
-        var count = 1;
-
-        while (!user.emailVerified) {
-          console.log(user.emailVerified);
-          if (count === 1) {
-            await new Promise((resolve) => setTimeout(resolve, 5000));
-            Alert.alert("Email not verified", "Please verify your email.");
-          }
-          await user.reload();
-          count++;
+      while (!user.emailVerified) {
+        if (count === 1) {
+          await new Promise(resolve => setTimeout(resolve, 5000));
+          Alert.alert("Email not verified", "Please verify your email.");
         }
+        await user.reload();
+        count++;
+      }
 
-        // await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
-
-        await setDoc(userDocRef, {
-          username: username,
-          email: email,
-          verified: false,
-          contact: "",
-          gender: "",
-          birthdate: "",
-          // password: password,
-        });
-
-        Alert.alert("User registered successfully!", "");
-
-        this.setState({
-          username: "",
-          email: "",
-          password: "",
-          loading: false,
-        });
-
-        this.props.navigation.navigate("Dashboard");
+      await setDoc(userDocRef, {
+        username: username,
+        email: email,
+        verified: false,
+        contact: "",
+        gender: "",
+        birthdate: "",
+        // password: password,
       });
 
-      unsubscribe();
+      Alert.alert("User registered successfully!", "");
+
+      this.setState({
+        username: "",
+        email: "",
+        password: "",
+        loading: false,
+      });
+
+      this.props.navigation.navigate("Dashboard");
+
     } catch (error) {
       Alert.alert("Error registering user:", error.message);
       console.log(error.message);

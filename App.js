@@ -19,10 +19,10 @@ import {
   Image,
 } from "react-native";
 import Booking from "./booking";
-import Home from "./staff page/home";
-import Register from "./staff page/register";
+import Home from "./src/screens/staff page/home";
+import Register from "./src/screens/staff page/register";
 import Edit from "./src/screens/user page/edit";
-import StaffView from "./staff page/view";
+import StaffView from "./src/screens/staff page/view";
 import Profile from "./src/screens/user page/profile";
 import BirthdatePicker from "./src/screens/user page/BirthdatePicker";
 

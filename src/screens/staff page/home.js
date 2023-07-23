@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { db, auth } from '../src/firebase/config';
+import { db, auth } from '../../firebase/config';
 import { collection, addDoc, getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 
 const Home = () => {

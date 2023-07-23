@@ -2,27 +2,20 @@ import {
   Alert,
   View,
   Text,
-  Button,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
 } from "react-native";
 import React, { useEffect, useState, useCallback } from "react";
-import { useFocusEffect } from "@react-navigation/native";
 import { db, auth } from "../../firebase/config";
 
 import {
   collection,
-  onSnapshot,
-  addDoc,
   query,
   where,
   getDocs,
-  listCollections,
   doc,
-  getDoc,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
@@ -36,8 +29,9 @@ import { LogBox } from "react-native";
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state",
 ]);
-
 LogBox.ignoreLogs(["Require cycle:"]);
+LogBox.ignoreLogs(["Maximum update depth exceeded"]);
+LogBox.ignoreLogs(["Sending `onAnimatedValueUpdate`"]);
 
 const Profile = () => {
   const [userId, setUserId] = useState("");
@@ -190,25 +184,18 @@ const Profile = () => {
   };
 
   const signOut = async () => {
-    //   signOut(auth).then(() => {
-    //     setTimeout(() => {
-    //       navigation.navigate("Login");
-    //     }, 500);
-    //   })
-    //     .catch(error => this.setState({ errorMessage: error.message }))
-    // }
     try {
       await signOut(auth);
       setTimeout(() => {
         navigation.navigate("Login");
-      }, 500); // Delay the navigation by 500 milliseconds
+      }, 1000); 
     } catch (error) {
       console.log(error);
     }
   };
 
   const [fontsLoaded] = useFonts({
-    "Caprasimo-Regular": require("./assets/font/Caprasimo-Regular.otf"),
+    "Caprasimo-Regular": require("../../../assets/font/Caprasimo-Regular.otf"),
   });
 
   if (!fontsLoaded) {

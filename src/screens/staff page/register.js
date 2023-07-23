@@ -1,4 +1,4 @@
-import { db, auth } from '../src/firebase/config';
+import { db, auth } from '../../firebase/config';
 import { collection, addDoc, getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
