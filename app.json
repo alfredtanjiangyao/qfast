@@ -16,7 +16,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "qfast",
       "infoPlist": {
-        "UIBackgroundModes": ["location", "fetch"]
+        "UIBackgroundModes": ["fetch"]
       }
     },
     "android": {

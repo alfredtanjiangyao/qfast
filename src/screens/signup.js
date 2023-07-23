@@ -37,7 +37,7 @@ import {
 import { TextInput } from "react-native-paper";
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
-// import { registerTaskAsync, BackgroundFetchResult, BackgroundFetch } from 'expo-background-fetch';
+import { registerTaskAsync, BackgroundFetchResult} from 'expo-background-fetch';
 
 // import { registerTaskAsync, TaskManager } from 'expo-task-manager';
 // import { BACKGROUND_FETCH_TASK } from './../../background'; 
@@ -49,6 +49,28 @@ LogBox.ignoreLogs([
 
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
+
+TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+  try {
+    var count = 1;
+    const user = auth.currentUser;
+
+    while (user && !user.emailVerified) {
+      console.log(user.emailVerified);
+      if (count === 1) {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        Alert.alert("Email not verified", "Please verify your email.");
+      }
+      await user.reload();
+      count++;
+    }
+
+    return BackgroundFetchResult.NewData;
+  } catch (error) {
+    console.error('Background task error:', error);
+    return BackgroundFetchResult.Failed;
+  }
+});
 
 export default class Signup extends Component {
   constructor() {
@@ -127,7 +149,7 @@ export default class Signup extends Component {
 
       await sendEmailVerification(user, actionCodeSettings);
 
-      Alert.alert("Email Verification sent! Check your mailbox", "");
+      Alert.alert("Email Verification sent!", "Please use a secondary device to verify your account!.");
     } catch (error) {
       Alert.alert(error.message);
       console.log(error.message);
@@ -366,10 +388,6 @@ export default class Signup extends Component {
 
       console.log("okay1");
 
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-        minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
-      });
-
       // Send email verification
       await this.verificationEmail(user);
 
@@ -377,6 +395,11 @@ export default class Signup extends Component {
 
       // Wait for email verification
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
+
+        // await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+        //   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
+        // });
+
         var count = 1;
 
         while (!user.emailVerified) {

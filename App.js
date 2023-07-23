@@ -7,7 +7,7 @@ import Signup from './src/screens/signup';
 import Dashboard from './src/screens/dashboard';
 import 'firebase/auth';
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   KeyboardAvoidingView,
   SafeAreaView,
@@ -27,8 +27,7 @@ import Profile from './profile';
 import BirthdatePicker from './BirthdatePicker';
 
 import * as BackgroundFetch from 'expo-background-fetch';
-import { BackgroundFetchResult } from 'expo-background-fetch';
-// import { registerTaskAsync, BackgroundFetchResult } from 'expo-background-fetch';
+import { registerTaskAsync, BackgroundFetchResult } from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 
 const BACKGROUND_FETCH_TASK = 'background-fetch';
@@ -42,30 +41,44 @@ const Stack = createStackNavigator();
 //   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
 // });
 
-BackgroundFetch.setMinimumIntervalAsync(10);
 
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-  try {
-    const user = auth.currentUser;
-    if (user && !user.emailVerified) {
-      // Perform the email verification check here
-      await user.reload();
-      if (user.emailVerified) {
-        // Email is verified, update the UI or take necessary actions
-        console.log('Email is verified.');
-      }
-    }
 
-    return BackgroundFetchResult.NewData;
-  } catch (error) {
-    console.error('Background task error:', error);
-    return BackgroundFetchResult.Failed;
-  }
-});
+// BackgroundFetch.setMinimumIntervalAsync(10);
 
-BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-  minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
-});
+// TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+//   try {
+//     var count = 1;
+//     const user = auth.currentUser;
+//     // if (user && !user.emailVerified) {
+//     //   // Perform the email verification check here
+//     //   await user.reload();
+//     //   if (user.emailVerified) {
+//     //     // Email is verified, update the UI or take necessary actions
+//     //     console.log('Email is verified.');
+//     //   }
+//     // }
+
+//     while (user && !user.emailVerified) {
+//       console.log(user.emailVerified);
+//       if (count === 1) {
+//         await new Promise((resolve) => setTimeout(resolve, 5000));
+//         Alert.alert("Email not verified", "Please verify your email.");
+//       }
+//       await user.reload();
+//       count++;
+//     }
+
+//     return BackgroundFetchResult.NewData;
+//   } catch (error) {
+//     console.error('Background task error:', error);
+//     return BackgroundFetchResult.Failed;
+//   }
+// });
+
+// BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+//   minimumInterval: 10, // The minimum time interval (in seconds) for the background task to run (e.g., every 60 seconds)
+// });
+
 
 // const backgroundTask = async (taskData) => {
   // try {
@@ -87,6 +100,7 @@ BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
 // };
 
 function MyStack() {
+
   return (
     <Stack.Navigator
       initialRouteName="Login"

@@ -14,6 +14,7 @@ import {
   KeyboardAvoidingView,
   SafeAreaView,
   TouchableOpacity,
+  TextInput,
   StyleSheet,
   Text,
   View,
@@ -22,7 +23,6 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { TextInput } from 'react-native-paper';
 // import GoogleButton from "react-google-button";
 // import {
 //   GoogleSignin,
@@ -68,7 +68,7 @@ export default class Login extends Component {
       const { email, password } = this.state;
 
       if (!email || !password) {
-        Alert.alert("Enter details to login!");
+        Alert.alert("Enter details to signin!");
         return;
       }
 
@@ -186,72 +186,87 @@ export default class Login extends Component {
     }
 
     return (
-      <KeyboardAvoidingView
-        style={[{ flex: 1 }, styles.container]}
-        behavior="position">
+      <SafeAreaView style={styles.container}>
+        <Image
+          source={require("../../assets/Qfast.png")}
+          style={{ width: 300, height: 300 }}
+        />
 
-        <SafeAreaView>
-          <Image
-            source={{uri: 'https://i.pinimg.com/originals/2b/32/b5/2b32b59dbfc427812eef579985234524.gif'}}
-            style={{ width: 300, height: 200, marginBottom: 50}}
-          />
-
+        <View style={styles.inputView}>
           <TextInput
             style={styles.TextInput}
-            mode='outlined'
-            label="Email"
+            placeholder="Email"
             placeholderTextColor="#003f5c"
             value={this.state.email}
             onChangeText={(val) => this.updateInputVal(val, "email")}
           />
+        </View>
 
-
+        <View style={styles.inputView}>
           <TextInput
-            style={[styles.TextInput, { marginTop: 5 }]}
-            mode='outlined'
-            //disabled: 'true'
-            label="Password"
+            style={styles.TextInput}
+            placeholder="Password"
             placeholderTextColor="#003f5c"
             value={this.state.password}
             secureTextEntry={true}
             onChangeText={(val) => this.updateInputVal(val, "password")}
             maxLength={16}
           />
-          <TouchableOpacity style={{ alignItems: 'flex-start' , marginTop: 3}} >
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.loginBtn}>
             <Text
-              style={{ fontSize: 14, fontWeight: '300', color: 'blue' }}
+              style={styles.loginText}
+              onPress={() => {
+                this.userLoginWithEmail();
+              }}
+            >
+              LOGIN
+            </Text>
+          </TouchableOpacity>
+
+          {/* space between loginBtn and forgotPasswordBtn */}
+          <View style={{ flex: 0.1, height: 1.5, backgroundColor: "black" }} />
+
+          <TouchableOpacity style={styles.forgotPasswordBtn}>
+            <Text
+              style={styles.loginText}
               onPress={() => {
                 this.resetPassword();
               }}
             >
-              Forgot Password?
+              FORGOT PASSWORD
             </Text>
           </TouchableOpacity>
-          <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={styles.loginBtn}>
-              <Text
-                style={{fontSize: 18, color: 'white'}}
-                onPress={() => {
-                  this.userLoginWithEmail();
-                }}
-              >
-                Login 
-              </Text>
-            </TouchableOpacity>
-          </View>
+        </View>
 
+        <TouchableOpacity style={styles.signUpBtn}>
+          <Text
+            style={styles.loginText}
+            onPress={() => this.props.navigation.navigate("Signup")}
+          >
+            Don't have account? Click here to signup
+          </Text>
+        </TouchableOpacity>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, justifyContent: 'center'}}>
-            <Text style={{ fontSize: 13, fontWeight: '200' }}>Don't have an account?</Text>
-            <TouchableOpacity style={styles.signUpBtn}
-              onPress={() => this.props.navigation.navigate("Signup")}>
-              <Text style={{ fontSize: 14, fontWeight: '300', color: 'blue' }}>  Sign up</Text>
-            </TouchableOpacity>
-          </View>
-
-
-        </SafeAreaView>
-      </KeyboardAvoidingView>
+        {/* <TouchableOpacity style={styles.googleButton}>
+          <Image
+            style={styles.googleIcon}
+            source={{
+              uri: "https://i.ibb.co/j82DCcR/search.png",
+            }}
+          />
+          <Text
+            style={styles.googleButtonText}
+            onPress={() => {
+              this.userLoginWithGoogle();
+            }}
+          >
+            Sign in with Google
+          </Text>
+        </TouchableOpacity> */}
+      </SafeAreaView>
     );
   }
 }
@@ -259,7 +274,7 @@ export default class Login extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#000000",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -277,15 +292,7 @@ const styles = StyleSheet.create({
     alignItems: "left",
   },
   TextInput: {
-    borderColor: 'grey',
-    borderRadius: 5,
-    width: 300,
-    paddingLeft: 5,
     fontWeight: "200",
-    //textAlign: 'left'
-  },
-  textInput: {
-    fontWeight: "100",
     height: 50,
     flex: 1,
     padding: 10,
@@ -296,18 +303,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginBtn: {
-    width: "50%",
-    borderRadius: 10,
-    height: 40,
+    width: "20%",
+    borderRadius: 25,
+    height: 50,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(100, 100, 150, 1)",
-    marginVertical: 20,
-    marginTop: 50
+    // marginTop: 0,
+    backgroundColor: "#f0f8ff",
   },
 
   signUpBtn: {
-    fontSize: 30
+    width: "80%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    backgroundColor: "#f0f8ff",
+  },
+
+  forgotPasswordBtn: {
+    width: "40%",
+    borderRadius: 25,
+    height: 50,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f0f8ff",
+  },
+
+  buttonContainer: {
+    flexDirection: "row",
+    // alignItems: 'center',
+    // width: "100%",
+    justifyContent: "space-evenly",
+    // marginHorizontal: 20,
+    // marginTop: 5
   },
   // googleButton: {
   //   backgroundColor: "white",
