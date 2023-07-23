@@ -188,4 +188,4 @@ const styles = StyleSheet.create({
 });
 export default Edit;
 
-module.exports = edit;
+// module.exports = edit;
