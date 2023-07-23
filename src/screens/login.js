@@ -228,12 +228,12 @@ export default class Login extends Component {
             </Text>
           </TouchableOpacity>
           <View style={{ alignItems: 'center' }}>
-            <TouchableOpacity style={styles.loginBtn}>
+            <TouchableOpacity style={styles.loginBtn} onPress={() => {
+                  this.userLoginWithEmail();
+                }}>
               <Text
                 style={{fontSize: 18, color: 'white'}}
-                onPress={() => {
-                  this.userLoginWithEmail();
-                }}
+                
               >
                 Login 
               </Text>

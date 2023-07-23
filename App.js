@@ -6,6 +6,7 @@ import Login from './src/screens/login';
 import Signup from './src/screens/signup';
 import Dashboard from './src/screens/dashboard';
 import 'firebase/auth';
+import BirthdatePicker from "./BirthdatePicker";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
@@ -76,6 +77,9 @@ function MyStack() {
         <Stack.Screen
         name="Profile"
         component={Profile} />
+         <Stack.Screen 
+         name="BirthdatePicker" 
+         component={BirthdatePicker} />
     </Stack.Navigator>
   );
 }

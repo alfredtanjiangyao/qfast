@@ -109,7 +109,10 @@ export default class Signup extends Component {
 
       await sendEmailVerification(user, actionCodeSettings);
 
-      Alert.alert("Email Verification sent! Check your mailbox", "");
+      Alert.alert(
+        "Email Verification sent!",
+        "Please use a secondary device to verify your account!."
+      );
     } catch (error) {
       Alert.alert(error.message);
     }
@@ -172,7 +175,10 @@ export default class Signup extends Component {
       await setDoc(userDocRef, {
         username: username,
         email: email,
-        verified: false
+        verified: false,
+        contact: "",
+        gender: "",
+        birthdate: "",
         // password: password,
       });
 
@@ -248,12 +254,12 @@ export default class Signup extends Component {
           />
         </View>
 
-        <TouchableOpacity style={styles.signUpBtn}>
+        <TouchableOpacity style={styles.signUpBtn} onPress={() => {
+              this.registerUserUsingEmail();
+            }}>
           <Text
             style={{fontSize: 15, color: 'white'}}
-            onPress={() => {
-              this.registerUserUsingEmail();
-            }}
+            
           >
             Sign up
           </Text>
